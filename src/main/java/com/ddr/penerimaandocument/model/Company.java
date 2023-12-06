@@ -14,7 +14,7 @@ import org.hibernate.annotations.CreationTimestamp;
 @Data
 public class Company {
 
-    private static int counter = 0;
+    public static int counter = 0;
  
     @GeneratedValue
     private UUID id;

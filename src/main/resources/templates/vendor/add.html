@@ -6,12 +6,37 @@
     layout:decorator="layout">
     <head>
         <!-- Head content - Meta tags, title, CSS references -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        function saveVendor() {
+            const dataToSend = {
+                vendorId: $("#Vid").val(),
+                vendorName: $("#Vname").val(),
+                vendorAddress: $("#Vaddress").val(),
+                contactName: $("#Coname").val(),
+                contactNumber: $("#Conum").val()
+            };
+            $.ajax({
+            type: "post",
+            url: "/vendor/add-vendor",
+            data: JSON.stringify(dataToSend),
+            contentType: 'application/json',
+            success: function () {
+                window.location.href = "/vendor/";
+            },
+            error: (err) => {
+                console.log(err)
+            }
+            });
+        }
+            
+    </script>
     </head>
     <section layout:fragment="header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0 text-dark">Master Vendor</h1>
+                    <h1 class="m-0 text-dark">Master Company</h1>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-6">
@@ -39,43 +64,40 @@
                         </div>
                         <div class="">
                             <div>
-                                <form id="formAddBeneficiary">
+                                <form id="addMasterVendor">
                                     <div class="d-flex flex-column flex">
                                         <div class="">
-                                            <label for="vendorId">Vendor ID</label> 
-                                            <input type="text" class="form-control myInput w-25" id="beneficiaryCode" readonly="readonly"/>
-                                        </div>
-                                        <div class="d-flex flex-column">
-                                            <label for="beneficiaryCode">Date</label> 
-                                            <input type="date" class="w-25" placeholder="Select Date">
+                                            <label for="companyId">Vendor ID</label> 
+                                            <input type="text" class="form-control myInput w-25" id="Vid" readonly="readonly" th:value="${counter}"/>
                                         </div>
                                         <div class="">
-                                            <label for="bankAddress">Vendor Name</label> 
-                                            <input type="text" class="form-control w-25" placeholder="Insert vendor name here..." id="bankAddress"/>
+                                            <label for="cp">Vendor Name</label> 
+                                            <input type="text" class="form-control w-25" placeholder="Insert vendor name here..." id="Vname"/>
                                         </div>
                                         <div class="">
                                             <label for="emailRef">Vendor Address</label> 
-                                            <input type="text" id="emailReff" placeholder="Insert vendor adress here..." class="w-50 form-control myInput" ></input>
+                                            <input type="text" id="Vaddress" placeholder="Insert vendor adress here..." class="w-50 form-control myInput" ></input>
                                         </div>
                                         <div class="">
                                             <label for="emailRef">Contact Name</label> 
-                                            <input type="text" id="emailReff" placeholder="Insert contact name here..." class="w-25 form-control myInput" ></input>
+                                            <input type="text" id="Coname" placeholder="Insert contact name here..." class="w-25 form-control myInput" ></input>
                                       </div>
                                       <div class="">
                                             <label for="emailRef">Contact Number</label> 
-                                            <input type="text" id="emailReff" placeholder="Insert contact number here..." class="w-25 form-control myInput" ></input>
+                                            <input type="text" id="Conum" placeholder="Insert contact number here..." class="w-25 form-control myInput" ></input>
                                     </div>
                                     </div>
-                                    <div class="">
-                                        <div class="box-footer d-flex flex-row-reverse">
-                                          <div class="pl-3">
-                                            <button type="button" id="saveBeneficiary" class="btn bg-black pl-2">Save</button>
-                                          </div>
-                                            <a href="./cancelbeneficiary" type="button"
-                                                class="btn bg-gray">Cancel</a>	
-                                        </div>
-                                    </div>
+                                    
                                 </form>
+                                <div class="">
+                                    <div class="box-footer d-flex flex-row-reverse">
+                                      <div class="pl-3">
+                                        <button onclick="saveVendor()" class="btn bg-black pl-2">Save</button>
+                                      </div>
+                                        <a href="/vendor/" type="button"
+                                            class="btn bg-gray">Cancel</a>	
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <!-- /.card -->

@@ -10,7 +10,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.ddr.penerimaandocument.dto.DeleteCompanyRequestDTO;
+import com.ddr.penerimaandocument.dto.CreateMasterCompanyRequestDTO;
+import com.ddr.penerimaandocument.model.Company;
+import com.ddr.penerimaandocument.service.CompanyService;
 import com.ddr.penerimaandocument.service.UtilService;
+
+import java.util.List;
+
 import org.springframework.beans.factory.ObjectFactory;
 import jakarta.servlet.http.HttpSession;
 
@@ -23,10 +30,45 @@ public class CompanyController {
 
     @Autowired
 	private UtilService utilService;
+    
+    @Autowired
+    private CompanyService companyService;
 
     @GetMapping(path = "/add")
-    public String hello(Model model){
+    public String addCompany(Model model){
+        String cid = companyService.testGetData();
+     
+        String prefix = cid.substring(0, 3);
+        String numericPart = cid.substring(3); // "0001"
+
+        int incremented = Integer.parseInt(numericPart) + 1;
+        String incrementedNumericPart = String.format("%04d", incremented);
+
+        String newCompanyId = prefix + incrementedNumericPart;
+
+        model.addAttribute("counter", newCompanyId);
         return "company/add";
+    }
+
+    @PostMapping("/add-company")
+    public ResponseEntity<?> addCompanyPost(@RequestBody CreateMasterCompanyRequestDTO entity) {
+        companyService.addMasterCompany(entity);
+        return ResponseEntity.ok("Add Success");
+    }
+    
+    
+    @GetMapping(path = "/")
+    public String showCompany(Model model){
+        List<Company> data = companyService.getAllVendor();
+
+        model.addAttribute("companies", data);
+        return "company/list";
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<?> deleteCompany(@RequestBody DeleteCompanyRequestDTO req) {
+        companyService.deleteCompany(req);
+        return ResponseEntity.ok("Delete Success");
     }
     
 }
