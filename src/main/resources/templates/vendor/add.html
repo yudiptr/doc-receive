@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout">
+    <head>
+        <!-- Head content - Meta tags, title, CSS references -->
+    </head>
+    <section layout:fragment="header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">Master Vendor</h1>
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/vendor">Edit</a></li>
+                        <li class="breadcrumb-item"><a href="delete">Delete</a></li>
+                        <li class="breadcrumb-item active">Create</li>
+                    </ol>
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container-fluid -->
+    </section>
+    <section layout:fragment="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card p-5">
+                        <div class="pb-3">
+                            <h2 class="card-title fs-2 font-weight-bold" >
+                                Master Vendor Add
+                            </h2>
+                        </div>
+                        <div class="">
+                            <div>
+                                <form id="formAddBeneficiary">
+                                    <div class="d-flex flex-column flex">
+                                        <div class="">
+                                            <label for="vendorId">Vendor ID</label> 
+                                            <input type="text" class="form-control myInput w-25" id="beneficiaryCode" readonly="readonly"/>
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <label for="beneficiaryCode">Date</label> 
+                                            <input type="date" class="w-25" placeholder="Select Date">
+                                        </div>
+                                        <div class="">
+                                            <label for="bankAddress">Vendor Name</label> 
+                                            <input type="text" class="form-control w-25" placeholder="Insert vendor name here..." id="bankAddress"/>
+                                        </div>
+                                        <div class="">
+                                            <label for="emailRef">Vendor Address</label> 
+                                            <input type="text" id="emailReff" placeholder="Insert vendor adress here..." class="w-50 form-control myInput" ></input>
+                                        </div>
+                                        <div class="">
+                                            <label for="emailRef">Contact Name</label> 
+                                            <input type="text" id="emailReff" placeholder="Insert contact name here..." class="w-25 form-control myInput" ></input>
+                                      </div>
+                                      <div class="">
+                                            <label for="emailRef">Contact Number</label> 
+                                            <input type="text" id="emailReff" placeholder="Insert contact number here..." class="w-25 form-control myInput" ></input>
+                                    </div>
+                                    </div>
+                                    <div class="">
+                                        <div class="box-footer d-flex flex-row-reverse">
+                                          <div class="pl-3">
+                                            <button type="button" id="saveBeneficiary" class="btn bg-black pl-2">Save</button>
+                                          </div>
+                                            <a href="./cancelbeneficiary" type="button"
+                                                class="btn bg-gray">Cancel</a>	
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- /.card -->
+                    </div>
+                </div>
+                <!-- /.col -->
+            </div>
+        </div>
+    </section>
+    <th:block layout:fragment="script">
+    </th:block>
+    </body>
+</html>

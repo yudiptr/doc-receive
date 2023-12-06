@@ -31,16 +31,6 @@ public class GeneralController {
         return "index";
     }
 
-    @GetMapping(path = "/layout")
-    public String layout(Model model){
-        return "layout";
-    }
-
-    @GetMapping(path = "/test")
-    public String test(Model model){
-        return "index-test";
-    }
-
     @GetMapping("/login")
     public String login(Model model){
         return "login";
