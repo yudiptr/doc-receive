@@ -9,21 +9,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import com.ddr.penerimaandocument.dto.DeleteCompanyRequestDTO;
 import com.ddr.penerimaandocument.dto.EditMasterCompanyDTO;
 import com.ddr.penerimaandocument.dto.CreateMasterCompanyRequestDTO;
 import com.ddr.penerimaandocument.model.Company;
 import com.ddr.penerimaandocument.repository.CompanyRepository;
 import com.ddr.penerimaandocument.service.CompanyService;
-import com.ddr.penerimaandocument.service.UtilService;
-
 import java.util.List;
-
 import org.springframework.beans.factory.ObjectFactory;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @Controller
 @RequestMapping("/company")
@@ -31,9 +25,6 @@ public class CompanyController {
     
     @Autowired
     ObjectFactory<HttpSession> httpSessionFactory;
-
-    @Autowired
-	private UtilService utilService;
     
     @Autowired
     private CompanyService companyService;
@@ -44,16 +35,21 @@ public class CompanyController {
     @GetMapping(path = "/add")
     public String addCompany(Model model){
         String cid = companyService.testGetData();
-     
-        String prefix = cid.substring(0, 3);
-        String numericPart = cid.substring(3); // "0001"
 
-        int incremented = Integer.parseInt(numericPart) + 1;
-        String incrementedNumericPart = String.format("%04d", incremented);
+        if (cid == null){
+            model.addAttribute("counter", "CID0001");
+        }
+        else {
+            String prefix = cid.substring(0, 3);
+            String numericPart = cid.substring(3); // "0001"
 
-        String newCompanyId = prefix + incrementedNumericPart;
+            int incremented = Integer.parseInt(numericPart) + 1;
+            String incrementedNumericPart = String.format("%04d", incremented);
 
-        model.addAttribute("counter", newCompanyId);
+            String newCompanyId = prefix + incrementedNumericPart;
+
+            model.addAttribute("counter", newCompanyId);
+        }
         return "company/add";
     }
 

@@ -9,6 +9,37 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
 
+            function saveFile(){
+                var formData = new FormData();
+                var allowedExtensions = ['.jpg', '.jpeg', '.pdf'];
+                const files = $('#fileInput')[0].files[0]
+                const filename = files.name
+                var extension = filename.substring(filename.lastIndexOf('.')).toLowerCase();
+                console.log(extension)
+
+                if (!allowedExtensions.includes(extension)){
+                    alert("Hanya boleh input file jpg/pdf")
+                    return;
+                }
+
+                formData.append('file', files);
+
+                $.ajax({
+                    url: 'save',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        console.log('File uploaded successfully');
+                        // Handle success
+                    },
+                    error: function(error) {
+                        console.error('Error uploading file:', error);
+                        // Handle error
+                    }
+                });
+            }
             function editVendor(){
                 const temp = []
                 var checkboxes = document.querySelectorAll('input[id^=deleteCheckbox]');
@@ -29,6 +60,7 @@
 
             function deleteSelected() {
 
+            
                 const temp = []
                 var checkboxes = document.querySelectorAll('input[id^=deleteCheckbox]');
                 checkboxes.forEach(function(checkbox) {
@@ -36,9 +68,8 @@
                         temp.push(checkbox.value)
                     }
                 });
-                
                 const dataToSend = {
-                    vendorValue: temp
+                    companyValue: temp
                 }
                 $.ajax({
                     url: 'delete',
@@ -63,11 +94,13 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0 text-dark">Master Vendor</h1>
+                    <h1 class="m-0 text-dark">Document IN</h1>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
+                        <input type="file" id="fileInput" name="file" accept=".jpg, .pdf" />
+                        <button onclick="saveFile()" id="uploadBtn">Upload</button>
                         <button class="btn btn-default m-2" type="button" onclick="editVendor()">Edit</button>
                         <button class="btn btn-danger m-2" type="button" onclick="deleteSelected()">Delete Selected</button>
                         <a href="/vendor/add" class="nav-link"><p>Create</p></a>
@@ -88,26 +121,28 @@
                             <thead class="thead-dark">
                                 <tr>
                                     <th>Select</th>
-                                    <th>No</th>
-                                    <th>Vendor ID</th>
-                                    <th>Vendor Name</th>
-                                    <th>Contact Name</th>
-                                    <th>Contact Number</th>
-                                    <th>Vendor Location</th>
+                                    <th>Document ID</th>
+                                    <th>Company To</th>
+                                    <th>Date</th>
+                                    <th>Vendor To</th>
+                                    <th>Invoice Ref</th>
+                                    <th>Created By</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <!-- Loop melalui list of companies -->
-                                <tr th:each="vendor, index : ${vendors}">
+                                <tr th:each="doc, index : ${document}">
                                     <td>
-                                        <input type="checkbox" th:id="'deleteCheckbox' + ${index.index}" th:name="'deleteCheckbox' + ${index.index}" th:value="${vendor.vendorId}">
+                                        <input type="checkbox" th:id="'deleteCheckbox' + ${index.index}" th:name="'deleteCheckbox' + ${index.index}" th:value="${doc.documentId}">
                                     </td>
-                                    <td th:text="${index.index + 1}"></td>
-                                    <td th:text="${vendor.vendorId}"></td>
-                                    <td th:text="${vendor.vendorName}"></td>
-                                    <td th:text="${vendor.contactName}"></td>
-                                    <td th:text="${vendor.contactNumber}"></td>
-                                    <td th:text="${vendor.vendorAddress}"></td>
+                                    <td th:text="${doc.documentId}"></td>
+                                    <td th:text="${doc.company.companyName}"></td>
+                                    <td th:text="${#dates.format(doc.createdAt, 'dd/MM/yy')}"></td>
+                                    <td th:text="${doc.vendor.vendorName}"></td>
+                                    <td th:text="${doc.invoiceRef}"></td>
+                                    <td th:text="${doc.createdBy}"></td>
+                                    <td th:text="${doc.status}"></td>
                                 </tr>
                             </tbody>
                         </table>

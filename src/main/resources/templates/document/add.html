@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout">
+    <head>
+        <!-- Head content - Meta tags, title, CSS references -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script th:inline="javascript">
+        function saveDocument() {
+
+            var selectCompany = document.getElementById("selectedCompany");
+            var selectedCompany = selectCompany.value;
+
+            var selectVendor = document.getElementById("selectedVendor");
+            var selectedVendor = selectVendor.value;
+
+            var formData = new FormData();
+            var allowedExtensions = ['.jpg', '.jpeg', '.pdf'];
+
+            const files = $('#fileInput')[0].files[0]
+            const filename = files.name
+            var extension = filename.substring(filename.lastIndexOf('.')).toLowerCase();
+
+            if (!allowedExtensions.includes(extension)){
+                alert("Hanya boleh input file jpg/pdf")
+                return;
+            }
+            
+            var docSplit = window.location.pathname.split("/");
+            var docType = docSplit[1].split("-")[1];
+
+            // const dataToSend = {
+            //     documentId: $("#Did").val(),
+            //     invoiceRef: $("#des").val(),
+            //     description: $("#ref").val(),
+            //     companyTo: selectedCompany,
+            //     vendor: selectedVendor,
+            //     contactName: $("#Coname").val(),
+            //     contactNumber: $("#Conum").val(),
+            //     file: files,
+            //     createdBy: "",
+            //     status: "DRAFT",
+            //     documentType: docType,
+            // };
+
+            var formData = new FormData();
+            formData.append('addDocumentData[]', $("#Did").val());
+            formData.append('addDocumentData[]', $("#des").val());
+            formData.append('addDocumentData[]', $("#ref").val());
+            formData.append('addDocumentData[]', selectedCompany);
+            formData.append('addDocumentData[]', selectedVendor);
+            formData.append('addDocumentData[]', $("#Coname").val());
+            formData.append('addDocumentData[]', $("#Conum").val());
+            formData.append('addDocumentData[]', "");
+            formData.append('addDocumentData[]', "DRAFT");
+            formData.append('addDocumentData[]', docType);
+            formData.append('file', files);
+
+            $.ajax({
+            type: "post",
+            url: "/" + docSplit[1] + "/save",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function () {
+                // window.location.href = '/' +docSplit[1] + '/';
+            },
+            error: (err) => {
+                console.log(err)
+            }
+            });
+        }
+            
+    </script>
+    </head>
+    <section layout:fragment="header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark" th:text="${'Document - ' + type}"></h1>
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/vendor">Edit</a></li>
+                        <li class="breadcrumb-item"><a href="delete">Delete</a></li>
+                        <li class="breadcrumb-item active">Create</li>
+                    </ol>
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container-fluid -->
+    </section>
+    <section layout:fragment="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card p-5">
+                        <div class="pb-3">
+                            <h2 class="card-title fs-2 font-weight-bold" th:text="${'Document ' + type + ' Add'}">
+                            </h2>
+                        </div>
+                        <div class="">
+                            <div>
+                                <div class="d-flex flex-column flex">
+                                    <div class="">
+                                        <label for="companyId">Document ID</label> 
+                                        <input type="text" class="form-control myInput w-25" id="Did" readonly="readonly" th:value="${counter}"/>
+                                    </div>
+                                    <div class="">
+                                        <label for="cp">Invoice Ref</label> 
+                                        <input type="text" class="form-control w-50" placeholder="Insert invoice ref" id="ref"/>
+                                    </div>
+                                    <div class="">
+                                        <label for="cp">Ref Description</label> 
+                                        <textarea type="text" class="form-control w-50" placeholder="Insert Ref Description" id="des"></textarea>
+                                    </div>
+                                    <div class="d-flex flex-column">
+                                        <label>Company To</label> 
+                                        <select id="selectedCompany" class="w-25">
+                                            <option th:each="company : ${companies}" th:value="${company.companyId}" th:text="${company.companyName}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="d-flex flex-column">
+                                        <label>Vendor</label> 
+                                        <select id="selectedVendor" class="w-25">
+                                            <option th:each="vendor : ${vendors}" th:value="${vendor.vendorId}" th:text="${vendor.vendorName}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="">
+                                        <label>Contact Name</label> 
+                                        <input type="text" id="Coname" placeholder="Insert contact name here..." class="w-50 form-control myInput" ></input>
+                                    </div>
+                                    <div class="">
+                                        <label>Contact Number</label> 
+                                        <input type="text" id="Conum" placeholder="Insert contact number here..." class="w-50 form-control myInput" ></input>
+                                </div>
+                                <div class="input-group my-3 d-flex flex-column">
+                                    <label>Document File</label> 
+                                    <input type="file" id="fileInput" name="file" accept=".jpg, .pdf" />
+                                </div>
+                                <div class="">
+                                    <div class="box-footer d-flex flex-row-reverse">
+                                      <div class="pl-3">
+                                        <button onclick="saveDocument()" class="btn bg-black pl-2">Save</button>
+                                      </div>
+                                        <a th:href="${'/document-' + type.replace('IN', 'in').replace('OUT', 'out') + '/'}"type="button"
+                                            class="btn bg-gray">Cancel</a>	
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.card -->
+                    </div>
+                </div>
+                <!-- /.col -->
+            </div>
+        </div>
+    </section>
+    <th:block layout:fragment="script">
+    </th:block>
+    </body>
+</html>

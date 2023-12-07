@@ -35,7 +35,9 @@ public class Document {
     private String receivedBy;
     private String contactName;
     private String contactNumber;
-    private String iamgeUrl;
+    private String documentPath;
+    private String createdBy;
+    private String invoiceRef;
 
 
     @Enumerated(EnumType.STRING)

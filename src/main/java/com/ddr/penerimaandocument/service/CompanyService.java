@@ -31,7 +31,6 @@ public class CompanyService {
 	@Value("${openendpoint.getallcompany}")
 	private String GET_ALL_COMPANY;
 
-	@Autowired
 	public CompanyService(@Qualifier("restTemplateHttp")RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
 	}

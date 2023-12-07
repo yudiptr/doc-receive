@@ -9,19 +9,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.ddr.penerimaandocument.dto.CreateMasterCompanyRequestDTO;
 import com.ddr.penerimaandocument.dto.CreateMasterVendorRequestDTO;
-import com.ddr.penerimaandocument.dto.DeleteCompanyRequestDTO;
+import com.ddr.penerimaandocument.dto.DeleteVendorRequestDTO;
 import com.ddr.penerimaandocument.dto.EditMasterVendorDTO;
-import com.ddr.penerimaandocument.model.Company;
 import com.ddr.penerimaandocument.model.Vendor;
 import com.ddr.penerimaandocument.repository.VendorRepository;
-
 import java.util.List;
-import com.ddr.penerimaandocument.service.UtilService;
 import com.ddr.penerimaandocument.service.VendorService;
-
 import org.springframework.beans.factory.ObjectFactory;
 import jakarta.servlet.http.HttpSession;
 
@@ -33,9 +27,6 @@ public class VendorController {
     ObjectFactory<HttpSession> httpSessionFactory;
 
     @Autowired
-	private UtilService utilService;
-
-    @Autowired
     private VendorService vendorService;
 
     @Autowired
@@ -45,16 +36,21 @@ public class VendorController {
     public String addVendor(Model model){
 
         String cid = vendorService.testGetData();
-     
-        String prefix = cid.substring(0, 4);
-        String numericPart = cid.substring(5); // "0001"
 
-        int incremented = Integer.parseInt(numericPart) + 1;
-        String incrementedNumericPart = String.format("%04d", incremented);
+        if(cid == null){
+            model.addAttribute("counter", "VID0001");
+        }
+        else {
+            String prefix = cid.substring(0, 3);
+            String numericPart = cid.substring(3); // "0001"
 
-        String newVendorId = prefix + incrementedNumericPart;
+            int incremented = Integer.parseInt(numericPart) + 1;
+            String incrementedNumericPart = String.format("%04d", incremented);
 
-        model.addAttribute("counter", newVendorId);
+            String newVendorId = prefix + incrementedNumericPart;
+
+            model.addAttribute("counter", newVendorId);
+        }
 
         return "vendor/add";
     }
@@ -74,8 +70,8 @@ public class VendorController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<?> deleteCompany(@RequestBody DeleteCompanyRequestDTO req) {
-        
+    public ResponseEntity<?> deleteCompany(@RequestBody DeleteVendorRequestDTO req) {
+        vendorService.deleteVendor(req);
         return ResponseEntity.ok("Delete Success");
     }
 

@@ -54,7 +54,7 @@ public class VendorService {
 		return vendorRepository.findLastInserted();
 	}
 
-	public void deleteCompany(DeleteVendorRequestDTO req){
+	public void deleteVendor(DeleteVendorRequestDTO req){
 		for (String id : req.getVendorValue()){
 			vendorRepository.deleteById(id);
 		}
