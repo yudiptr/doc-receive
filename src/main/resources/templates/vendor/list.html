@@ -8,6 +8,25 @@
         <!-- Head content - Meta tags, title, CSS references -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
+
+            function editVendor(){
+                const temp = []
+                var checkboxes = document.querySelectorAll('input[id^=deleteCheckbox]');
+                checkboxes.forEach(function(checkbox) {
+                    if (checkbox.checked == true) {
+                        temp.push(checkbox.value)
+                    }
+                });
+
+                console.log(temp);  
+                if(temp.length == 1){
+                    window.location.href = "/vendor/" + temp[0]
+                }
+                else {
+                    alert("Hanya dapat mengedit 1 buah vendor")
+                }
+            }
+
             function deleteSelected() {
 
             
@@ -49,7 +68,7 @@
                 <!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <button class="btn btn-default m-2" type="button" onclick="deleteSelected()">Edit</button>
+                        <button class="btn btn-default m-2" type="button" onclick="editVendor()">Edit</button>
                         <button class="btn btn-danger m-2" type="button" onclick="deleteSelected()">Delete Selected</button>
                         <a href="/vendor/add" class="nav-link"><p>Create</p></a>
                     </ol>

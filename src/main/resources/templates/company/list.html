@@ -8,6 +8,27 @@
         <!-- Head content - Meta tags, title, CSS references -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
+
+
+            function editCompany(){
+                const temp = []
+                var checkboxes = document.querySelectorAll('input[id^=deleteCheckbox]');
+                checkboxes.forEach(function(checkbox) {
+                    if (checkbox.checked == true) {
+                        temp.push(checkbox.value)
+                    }
+                });
+
+                console.log(temp);  
+                if(temp.length == 1){
+                    window.location.href = "/company/" + temp[0]
+                }
+                else {
+                    alert("Hanya dapat mengedit 1 buah company")
+                }
+            }
+
+
             function deleteSelected() {
 
             
@@ -44,12 +65,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0 text-dark">Master Vendor</h1>
+                    <h1 class="m-0 text-dark">Master Company</h1>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <button class="btn btn-default m-2" type="button" onclick="deleteSelected()">Edit</button>
+                        <button class="btn btn-default m-2" type="button" onclick="editCompany()">Edit</button>
                         <button class="btn btn-danger m-2" type="button" onclick="deleteSelected()">Delete Selected</button>
                         <a href="/company/add" class="nav-link"><p>Create</p></a>
                     </ol>
