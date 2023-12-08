@@ -9,6 +9,8 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import java.util.Date;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.EnumType;
 
 @Entity
@@ -22,6 +24,9 @@ public class Document {
 
     @CreationTimestamp
     private Date createdAt;
+
+    @UpdateTimestamp
+    private Date updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "company_name")
@@ -37,6 +42,7 @@ public class Document {
     private String contactNumber;
     private String documentPath;
     private String createdBy;
+    private String updatedBy;
     private String invoiceRef;
 
 

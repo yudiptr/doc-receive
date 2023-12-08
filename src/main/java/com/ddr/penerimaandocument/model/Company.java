@@ -5,6 +5,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import java.util.Date;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "company")
@@ -20,6 +21,9 @@ public class Company {
 
     @CreationTimestamp
     private Date joinDate;
+
+    @UpdateTimestamp
+    private Date updatedDate;
 
     private String contactNumber;
     private String contactName;

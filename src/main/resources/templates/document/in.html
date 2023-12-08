@@ -8,39 +8,7 @@
         <!-- Head content - Meta tags, title, CSS references -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
-
-            function saveFile(){
-                var formData = new FormData();
-                var allowedExtensions = ['.jpg', '.jpeg', '.pdf'];
-                const files = $('#fileInput')[0].files[0]
-                const filename = files.name
-                var extension = filename.substring(filename.lastIndexOf('.')).toLowerCase();
-                console.log(extension)
-
-                if (!allowedExtensions.includes(extension)){
-                    alert("Hanya boleh input file jpg/pdf")
-                    return;
-                }
-
-                formData.append('file', files);
-
-                $.ajax({
-                    url: 'save',
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        console.log('File uploaded successfully');
-                        // Handle success
-                    },
-                    error: function(error) {
-                        console.error('Error uploading file:', error);
-                        // Handle error
-                    }
-                });
-            }
-            function editVendor(){
+            function editDocument(){
                 const temp = []
                 var checkboxes = document.querySelectorAll('input[id^=deleteCheckbox]');
                 checkboxes.forEach(function(checkbox) {
@@ -51,16 +19,14 @@
 
                 console.log(temp);  
                 if(temp.length == 1){
-                    window.location.href = "/vendor/" + temp[0]
+                    window.location.href =  temp[0];
                 }
                 else {
-                    alert("Hanya dapat mengedit 1 buah vendor")
+                    alert("Hanya dapat mengedit 1 buah document")
                 }
             }
 
             function deleteSelected() {
-
-            
                 const temp = []
                 var checkboxes = document.querySelectorAll('input[id^=deleteCheckbox]');
                 checkboxes.forEach(function(checkbox) {
@@ -69,7 +35,7 @@
                     }
                 });
                 const dataToSend = {
-                    companyValue: temp
+                    documentValue: temp
                 }
                 $.ajax({
                     url: 'delete',
@@ -99,11 +65,9 @@
                 <!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <input type="file" id="fileInput" name="file" accept=".jpg, .pdf" />
-                        <button onclick="saveFile()" id="uploadBtn">Upload</button>
-                        <button class="btn btn-default m-2" type="button" onclick="editVendor()">Edit</button>
+                        <button class="btn btn-default m-2" type="button" onclick="editDocument()">Edit</button>
                         <button class="btn btn-danger m-2" type="button" onclick="deleteSelected()">Delete Selected</button>
-                        <a href="/vendor/add" class="nav-link"><p>Create</p></a>
+                        <a href="/document-in/add" class="nav-link"><p>Create</p></a>
                     </ol>
                 </div>
                 <!-- /.col -->

@@ -8,8 +8,7 @@
         <!-- Head content - Meta tags, title, CSS references -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script th:inline="javascript">
-
-        function saveDocument() {
+        function editDocument() {
 
             var selectCompany = document.getElementById("selectedCompany");
             var selectedCompany = selectCompany.value;
@@ -19,6 +18,41 @@
 
             var formData = new FormData();
             var allowedExtensions = ['.jpg', '.jpeg', '.pdf'];
+
+            const fileChecker = $('#fileInput')[0].files.length
+
+            
+            if(fileChecker == 0){
+                var docSplit = window.location.pathname.split("/");
+                var docType = docSplit[1].split("-")[1];
+                
+                var formData = new FormData();
+                formData.append('editDocumentData[]', $("#Did").val());
+                formData.append('editDocumentData[]', $("#des").val());
+                formData.append('editDocumentData[]', selectedCompany);
+                formData.append('editDocumentData[]', selectedVendor);
+                formData.append('editDocumentData[]', $("#Coname").val());
+                formData.append('editDocumentData[]', $("#Conum").val());
+                formData.append('editDocumentData[]', "Yudi"); // updated by, soon to be changed
+                formData.append('file', null);
+
+                console.log(formData)
+
+                $.ajax({
+                    type: "post",
+                    url: "edit",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                success: function () {
+                        window.location.href = '/' +docSplit[1] + '/';
+                    },
+                error: (err) => {
+                        console.log(err)
+                    }
+                });
+                return;
+            }
 
             const files = $('#fileInput')[0].files[0]
             const filename = files.name
@@ -47,21 +81,19 @@
             // };
 
             var formData = new FormData();
-            formData.append('addDocumentData[]', $("#Did").val());
-            formData.append('addDocumentData[]', $("#des").val());
-            formData.append('addDocumentData[]', $("#ref").val());
-            formData.append('addDocumentData[]', selectedCompany);
-            formData.append('addDocumentData[]', selectedVendor);
-            formData.append('addDocumentData[]', $("#Coname").val());
-            formData.append('addDocumentData[]', $("#Conum").val());
-            formData.append('addDocumentData[]', "");
-            formData.append('addDocumentData[]', "DRAFT");
-            formData.append('addDocumentData[]', docType);
+            formData.append('editDocumentData[]', $("#Did").val());
+            formData.append('editDocumentData[]', $("#des").val());
+            formData.append('editDocumentData[]', selectedCompany);
+            formData.append('editDocumentData[]', selectedVendor);
+            formData.append('editDocumentData[]', $("#Coname").val());
+            formData.append('editDocumentData[]', $("#Conum").val());
+            formData.append('editDocumentData[]', "Yudi"); //updated by, soon to be changed
             formData.append('file', files);
 
+            console.log(formData)
             $.ajax({
             type: "post",
-            url: "/" + docSplit[1] + "/save",
+            url: "edit",
             data: formData,
             processData: false,
             contentType: false,
@@ -102,7 +134,7 @@
                 <div class="col-md-12">
                     <div class="card p-5">
                         <div class="pb-3">
-                            <h2 class="card-title fs-2 font-weight-bold" th:text="${'Document ' + type + ' Add'}">
+                            <h2 class="card-title fs-2 font-weight-bold" th:text="${'Document ' + type + ' Edit'}">
                             </h2>
                         </div>
                         <div class="">
@@ -110,35 +142,35 @@
                                 <div class="d-flex flex-column flex">
                                     <div class="">
                                         <label for="companyId">Document ID</label> 
-                                        <input type="text" class="form-control myInput w-25" id="Did" readonly="readonly" th:value="${counter}"/>
+                                        <input type="text" class="form-control myInput w-25" id="Did" readonly="readonly" th:value="${doc.documentId}"/>
                                     </div>
                                     <div class="">
                                         <label for="cp">Invoice Ref</label> 
-                                        <input type="text" class="form-control w-50" placeholder="Insert invoice ref" id="ref"/>
+                                        <input type="text" class="form-control w-50" readonly="readonly" th:value="${doc.invoiceRef}" id="ref"/>
                                     </div>
                                     <div class="">
                                         <label for="cp">Ref Description</label> 
-                                        <textarea type="text" class="form-control w-50" placeholder="Insert Ref Description" id="des"></textarea>
+                                        <textarea type="text" class="form-control w-50" placeholder="Insert Ref Description" th:text="${doc.description}" id="des"></textarea>
                                     </div>
                                     <div class="d-flex flex-column">
                                         <label>Company To</label> 
-                                        <select id="selectedCompany" class="w-25">
-                                            <option th:each="company : ${companies}" th:value="${company.companyId}" th:text="${company.companyName}"></option>
+                                        <select id="selectedCompany" th:field="${doc.company.companyId}" class="w-25">
+                                            <option th:each="company : ${companies}" th:selected="${doc.company.companyId eq company.companyId}" th:value="${company.companyId}" th:text="${company.companyName}"></option>
                                         </select>
                                     </div>
                                     <div class="d-flex flex-column">
                                         <label>Vendor</label> 
-                                        <select id="selectedVendor" class="w-25">
-                                            <option th:each="vendor : ${vendors}" th:value="${vendor.vendorId}" th:text="${vendor.vendorName}"></option>
+                                        <select th:field="${doc.vendor.vendorId}" id="selectedVendor" class="w-25">
+                                            <option th:each="vendor : ${vendors}" th:selected="${doc.vendor.vendorId eq vendor.vendorId}" th:value="${vendor.vendorId}" th:text="${vendor.vendorName}"></option>
                                         </select>
                                     </div>
                                     <div class="">
                                         <label>Contact Name</label> 
-                                        <input type="text" id="Coname" placeholder="Insert contact name here..." class="w-50 form-control myInput" ></input>
+                                        <input th:value="${doc.contactName}" type="text" id="Coname" placeholder="Insert contact name here..." class="w-50 form-control myInput" ></input>
                                     </div>
                                     <div class="">
                                         <label>Contact Number</label> 
-                                        <input type="text" id="Conum" placeholder="Insert contact number here..." class="w-50 form-control myInput" ></input>
+                                        <input th:value="${doc.contactNumber}" type="text" id="Conum" placeholder="Insert contact number here..." class="w-50 form-control myInput" ></input>
                                 </div>
                                 <div class="input-group my-3 d-flex flex-column">
                                     <label>Document File</label> 
@@ -147,7 +179,7 @@
                                 <div class="">
                                     <div class="box-footer d-flex flex-row-reverse">
                                       <div class="pl-3">
-                                        <button onclick="saveDocument()" class="btn bg-black pl-2">Save</button>
+                                        <button onclick="editDocument()" class="btn bg-black pl-2">Save</button>
                                       </div>
                                         <a th:href="${'/document-' + type.replace('IN', 'in').replace('OUT', 'out') + '/'}"type="button"
                                             class="btn bg-gray">Cancel</a>	

@@ -1,39 +1,31 @@
 package com.ddr.penerimaandocument.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.ddr.penerimaandocument.dto.AddDocumentReqDTO;
+import com.ddr.penerimaandocument.dto.DeleteDocumentDTO;
+import com.ddr.penerimaandocument.dto.EditDocumentReqDTO;
 import com.ddr.penerimaandocument.model.Document;
 import com.ddr.penerimaandocument.model.DocumentType;
 import com.ddr.penerimaandocument.repository.CompanyRepository;
 import com.ddr.penerimaandocument.repository.DocumentRepository;
 import com.ddr.penerimaandocument.repository.VendorRepository;
-import com.ddr.penerimaandocument.service.CompanyService;
 import com.ddr.penerimaandocument.service.DocumentService;
-import com.ddr.penerimaandocument.service.VendorService;
-
 import java.text.SimpleDateFormat;
-import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.List;
-
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.ObjectFactory;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.util.Date;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @Controller
 @RequestMapping("/document-in")
@@ -71,7 +63,7 @@ public class DocumenIntController {
             SimpleDateFormat sdf = new SimpleDateFormat("yy");
             String lastTwoDigitsOfYear = sdf.format(currentDate);
             counter += lastTwoDigitsOfYear;
-            counter += 0001;
+            counter += "0001";
 
             model.addAttribute("counter", counter);
         }
@@ -100,7 +92,6 @@ public class DocumenIntController {
 
     @PostMapping("/save")
     public ResponseEntity<?> saveDocument(@RequestParam("addDocumentData[]") String[] data, @RequestParam("file") MultipartFile file) {
-        String UPLOAD_DIR = "C:\\Users\\YudiSabri\\Desktop\\docReceive\\";
 
         AddDocumentReqDTO req = new AddDocumentReqDTO();
         req.setDocumentId(data[0]);
@@ -111,25 +102,49 @@ public class DocumenIntController {
         req.setContactName(data[5]);
         req.setContactNumber(data[6]);
         req.setCreatedBy(data[7]);
+        req.setUpdatedBy(data[7]);
         req.setStatus(data[8]);
         req.setDocumentType(data[9]);
         req.setFile(file);
         
-        if (req.getFile() == null) {
-            return ResponseEntity.ok("File gak ada");
-        }
+        ResponseEntity<?> res = documentService.addDocument(req);
 
-        try {
-            byte[] bytes = req.getFile().getBytes();
-            Path path = Paths.get(UPLOAD_DIR + req.getFile().getOriginalFilename());
-            Files.write(path, bytes);
-            System.out.println("SUKSES");
-            return  ResponseEntity.ok("Sukses");
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("FAILED");
-            return  ResponseEntity.ok("Gagal");
-        }
+        return res;
     }
-    
+
+    @PostMapping("/edit")
+    public ResponseEntity<?> editDocument(@RequestParam("editDocumentData[]") String[] data, @RequestParam(value="file", required = false) MultipartFile file) {
+
+        EditDocumentReqDTO req = new EditDocumentReqDTO();
+        req.setDocumentId(data[0]);
+        req.setDescription(data[1]);
+        req.setCompanyTo(data[2]);
+        req.setVendor(data[3]);
+        req.setContactName(data[4]);
+        req.setContactNumber(data[5]);
+        req.setUpdatedBy(data[6]);
+
+        req.setFile(file);
+        
+        ResponseEntity<?> res = documentService.editDocument(req);
+
+        return res;
+    }
+
+    @PostMapping("/delete")
+    public String deleteDocument(@RequestBody DeleteDocumentDTO req) {
+        documentService.delete(req);
+
+        return "document/in";
+    }
+
+    @GetMapping("/{documentId}")
+    public String getMethodName(@PathVariable("documentId") String documentId, Model model) {
+        Document data = documentRepository.getReferenceById(documentId);
+        model.addAttribute("doc", data);
+        model.addAttribute("companies", companyRepository.getAllCompanyName());
+        model.addAttribute("vendors", vendorRepository.getAllVendorName());
+        model.addAttribute("type", "IN");
+        return "document/edit";
+    }
 }

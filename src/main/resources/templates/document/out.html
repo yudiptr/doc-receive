@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout">
+    <head>
+        <!-- Head content - Meta tags, title, CSS references -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+
+            $(document).ready(function(){
+                $('#multiSelect').change(function(){
+                    $('#multiSelect option:selected').each(function(){
+                        var selectedValue = $(this).val();
+                        var selectedText = $(this).text();
+                        
+                        // Append selected options to the container
+                        $('#selectedOptionsContainer').append('<div class="badge badge-info mr-2">' + selectedText + '</div>');
+                    });
+                });
+
+                $('#selectedOptionsContainer').on('click', '.badge', function(e){
+                    var deselectedValue = $(this).attr('data-value');
+                    $('#multiSelect option[value="' + deselectedValue + '"]').prop('selected', false);
+                    $(this).remove();
+                });
+            });
+
+            function editDocument(){
+                const temp = []
+                var checkboxes = document.querySelectorAll('input[id^=deleteCheckbox]');
+                checkboxes.forEach(function(checkbox) {
+                    if (checkbox.checked == true) {
+                        temp.push(checkbox.value)
+                    }
+                });
+
+                console.log(temp);  
+                if(temp.length == 1){
+                    window.location.href =  temp[0];
+                }
+                else {
+                    alert("Hanya dapat mengedit 1 buah document")
+                }
+            }
+
+            function deleteSelected() {
+                const temp = []
+                var checkboxes = document.querySelectorAll('input[id^=deleteCheckbox]');
+                checkboxes.forEach(function(checkbox) {
+                    if (checkbox.checked == true) {
+                        temp.push(checkbox.value)
+                    }
+                });
+                const dataToSend = {
+                    documentValue: temp
+                }
+                $.ajax({
+                    url: 'delete',
+                    type: 'POST',
+                    data: JSON.stringify(dataToSend),
+                    contentType: 'application/json',
+                    success: (res) => {
+                        var checkboxes = document.querySelectorAll('input[id^=deleteCheckbox]');
+                        checkboxes.forEach(function(checkbox) {
+                            checkbox.checked = false;
+                        });
+                        location.reload()
+                    },
+                    error: (err) => {
+                        console.log(err)
+                    }
+                })
+            }
+        </script>
+    </head>
+    <section layout:fragment="header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">Document OUT</h1>
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <div class="container mt-4">
+                            <h3>Select Options</h3>
+                            <select id="multiSelect" class="form-control">
+                                <option value="Option1">Option 1</option>
+                                <option value="Option2">Option 2</option>
+                                <option value="Option3">Option 3</option>
+                                <!-- Add more options as needed -->
+                            </select>
+                    
+                            <div class="mt-3">
+                                <h4>Selected Options</h4>
+                                <div id="selectedOptionsContainer"></div>
+                            </div>
+                        </div>
+                        <button class="btn btn-default m-2" type="button" onclick="editDocument()">Edit</button>
+                        <button class="btn btn-danger m-2" type="button" onclick="deleteSelected()">Delete Selected</button>
+                        <a href="/document-out/add" class="nav-link"><p>Create</p></a>
+                    </ol>
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container-fluid -->
+    </section>
+    <section layout:fragment="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 w-fit">
+                    <div class="card px-4 py-4">
+                        <table class="table dataTable table-hover ">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Select</th>
+                                    <th>Document ID</th>
+                                    <th>Company To</th>
+                                    <th>Date</th>
+                                    <th>Vendor To</th>
+                                    <th>Invoice Ref</th>
+                                    <th>Created By</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Loop melalui list of companies -->
+                                <tr th:each="doc, index : ${document}">
+                                    <td>
+                                        <input type="checkbox" th:id="'deleteCheckbox' + ${index.index}" th:name="'deleteCheckbox' + ${index.index}" th:value="${doc.documentId}">
+                                    </td>
+                                    <td th:text="${doc.documentId}"></td>
+                                    <td th:text="${doc.company.companyName}"></td>
+                                    <td th:text="${#dates.format(doc.createdAt, 'dd/MM/yy')}"></td>
+                                    <td th:text="${doc.vendor.vendorName}"></td>
+                                    <td th:text="${doc.invoiceRef}"></td>
+                                    <td th:text="${doc.createdBy}"></td>
+                                    <td th:text="${doc.status}"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <!-- /.card -->
+                    </div>
+                </div>
+                <!-- /.col -->
+            </div>
+        </div>
+    </section>
+    <th:block layout:fragment="script">
+    </th:block>
+    </body>
+</html>
