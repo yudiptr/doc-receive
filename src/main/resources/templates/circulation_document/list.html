@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout">
+    <head>
+        <!-- Head content - Meta tags, title, CSS references -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+
+
+            function editCirclDocument(){
+                const temp = []
+                var checkboxes = document.querySelectorAll('input[id^=deleteCheckbox]');
+                checkboxes.forEach(function(checkbox) {
+                    if (checkbox.checked == true) {
+                        temp.push(checkbox.value)
+                    }
+                });
+
+                console.log(temp);  
+                if(temp.length == 1){
+                    window.location.href = "/circulation-document/" + temp[0]
+                }
+                else {
+                    alert("Hanya dapat mengedit 1 buah circulation document")
+                }
+            }
+
+
+            function deleteSelected() {
+
+            
+                const temp = []
+                var checkboxes = document.querySelectorAll('input[id^=deleteCheckbox]');
+                checkboxes.forEach(function(checkbox) {
+                    if (checkbox.checked == true) {
+                        temp.push(checkbox.value)
+                    }
+                });
+                const dataToSend = {
+                    circulationsValue: temp
+                }
+                console.log(dataToSend)
+                $.ajax({
+                    url: 'delete',
+                    type: 'POST',
+                    data: JSON.stringify(dataToSend),
+                    contentType: 'application/json',
+                    success: (res) => {
+                        var checkboxes = document.querySelectorAll('input[id^=deleteCheckbox]');
+                        checkboxes.forEach(function(checkbox) {
+                            checkbox.checked = false;
+                        });
+                        window.location.reload()
+                    },
+                    error: (err) => {
+                        console.log(err)
+                    }
+                })
+            }
+        </script>
+    </head>
+    <section layout:fragment="header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">Circulation Document</h1>
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <button class="btn btn-default m-2" type="button" onclick="editCirclDocument()">Edit</button>
+                        <button class="btn btn-danger m-2" type="button" onclick="deleteSelected()">Delete Selected</button>
+                        <a href="/circulation-document/add" class="nav-link"><p>Create</p></a>
+                    </ol>
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container-fluid -->
+    </section>
+    <section layout:fragment="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 w-fit">
+                    <div class="card px-4 py-4">
+                        <table class="table dataTable table-hover ">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Select</th>
+                                    <th>ID</th>
+                                    <th>Company To</th>
+                                    <th>Received by</th>
+                                    <th>Date</th>
+                                    <th>Created by</th>
+                                    <th>Ref Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Loop melalui list of companies -->
+                                <tr th:each="docs, index : ${circulation_document}">
+                                    <td>
+                                        <input type="checkbox" th:id="'deleteCheckbox' + ${index.index}" th:name="'deleteCheckbox' + ${index.index}" th:value="${docs.circulationDocId}">
+                                    </td>
+                                    <td th:text="${docs.circulationDocId}"></td>
+                                    <td th:text="${docs.company.companyName}"></td>
+                                    <td th:text="${docs.receivedBy}"></td>
+                                    <td th:text="${#dates.format(docs.createdAt, 'dd/MM/yy')}"></td>
+                                    <td th:text="${docs.createdBy}"></td>
+                                    <td th:text="${docs.refDescription}"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <!-- /.card -->
+                    </div>
+                </div>
+                <!-- /.col -->
+            </div>
+        </div>
+    </section>
+    <th:block layout:fragment="script">
+    </th:block>
+    </body>
+</html>

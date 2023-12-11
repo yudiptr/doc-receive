@@ -7,9 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.ddr.penerimaandocument.dto.CreateMasterVendorRequestDTO;
 import com.ddr.penerimaandocument.dto.DeleteVendorRequestDTO;
-import com.ddr.penerimaandocument.dto.EditMasterCompanyDTO;
 import com.ddr.penerimaandocument.dto.EditMasterVendorDTO;
-import com.ddr.penerimaandocument.model.Company;
 import com.ddr.penerimaandocument.model.Vendor;
 import java.util.List;
 import com.ddr.penerimaandocument.repository.VendorRepository;
@@ -31,7 +29,6 @@ public class VendorService {
 	@Value("${openendpoint.getallcompany}")
 	private String GET_ALL_COMPANY;
 
-	@Autowired
 	public VendorService(@Qualifier("restTemplateHttp")RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
 	}

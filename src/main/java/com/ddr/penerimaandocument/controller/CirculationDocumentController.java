@@ -8,7 +8,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.ddr.penerimaandocument.dto.AddCirculationDocumentDTO;
+import com.ddr.penerimaandocument.dto.DeleteCirculationDocumentDTO;
 import com.ddr.penerimaandocument.dto.GetAllDocumentByCompanyResponseDTO;
+import com.ddr.penerimaandocument.dto.UpdateCirculationDocumentDTO;
+import com.ddr.penerimaandocument.model.CirculationDocument;
 import com.ddr.penerimaandocument.model.Document;
 import com.ddr.penerimaandocument.repository.CirculationDocumentRepository;
 import com.ddr.penerimaandocument.repository.CompanyRepository;
@@ -20,6 +23,8 @@ import java.util.List;
 import org.springframework.beans.factory.ObjectFactory;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import java.util.ArrayList;
 import java.util.Date;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -47,7 +52,7 @@ public class CirculationDocumentController {
     CirculationDocumentRepository circulationDocumentRepository;
 
 
-    @GetMapping("/{companyId}")
+    @GetMapping("/docs/{companyId}")
     public ResponseEntity<GetAllDocumentByCompanyResponseDTO> getDocsByCompany(@PathVariable("companyId") String Cid) {
         GetAllDocumentByCompanyResponseDTO res = new GetAllDocumentByCompanyResponseDTO();
         List<Document> data = documentRepository.findByCompanyDraft(Cid);
@@ -55,15 +60,52 @@ public class CirculationDocumentController {
         return ResponseEntity.ok(res);
     }
 
+     @GetMapping("/{circlDocId}")
+    public String getDocsByCompany(@PathVariable("circlDocId") String circlId, Model model) {
+        CirculationDocument data = circulationDocumentRepository.getReferenceById(circlId);
+
+        List<Document> dataDocument = new ArrayList<>();
+        List<Document> dataAllDocument = documentRepository.findByCompanyDraft(data.getCompany().getCompanyId());
+ 
+        for (String i : data.getDocumentsId()){
+            Document temp = documentRepository.getReferenceById(i);
+            dataDocument.add(temp);
+        }
+
+        model.addAttribute("data", data);
+        model.addAttribute("companies", companyRepository.getAllCompanyName());
+        model.addAttribute("docs", dataDocument);
+        model.addAttribute("allDocs", dataAllDocument);
+        return "circulation_document/edit";
+    }
+
     @PostMapping("/add")
     public ResponseEntity<?> addCirculationDocument(@RequestBody AddCirculationDocumentDTO req) {
-
         circulationDocumentService.addCirculationDocument(req);
         return ResponseEntity.ok("Success Add Circulation Document");
     }
-    
-    
 
+    @PostMapping("/update")
+    public ResponseEntity<?> UpdateCirculationDocument(@RequestBody UpdateCirculationDocumentDTO req) {
+        circulationDocumentService.updateCirculationDocument(req);
+        return ResponseEntity.ok("Success Update Circulation Document");
+    }
+
+    @GetMapping("/")
+    public String showCirculationDocument(Model model) {
+        List<CirculationDocument> data = circulationDocumentRepository.findByIsClosed();
+
+        model.addAttribute("circulation_document", data);
+        return "circulation_document/list";
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<?> deleteCirclDocument(@RequestBody DeleteCirculationDocumentDTO req) {
+        circulationDocumentService.delete(req);
+        return ResponseEntity.ok("Delete Success");
+    }
+    
+    
     @GetMapping("/add")
     public String addDocument(Model model) {
         String circId = circulationDocumentRepository.findLastIn();

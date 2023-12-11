@@ -18,7 +18,6 @@ import com.ddr.penerimaandocument.dto.EditDocumentReqDTO;
 import com.ddr.penerimaandocument.model.Document;
 import com.ddr.penerimaandocument.model.DocumentType;
 import com.ddr.penerimaandocument.model.Status;
-import com.ddr.penerimaandocument.model.Vendor;
 
 @Service
 public class DocumentService {
