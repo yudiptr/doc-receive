@@ -3,7 +3,6 @@ package com.ddr.penerimaandocument.utils;
 import javax.net.ssl.*;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 
 public class DisableSSLUtils {
