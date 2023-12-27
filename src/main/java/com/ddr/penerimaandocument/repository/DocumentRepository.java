@@ -20,5 +20,8 @@ public interface DocumentRepository extends JpaRepository<Document,String> {
     @Query("Select d FROM Document d WHERE d.status = DRAFT AND d.company.companyId = :comId")
     List<Document> findByCompanyDraft(@Param("comId") String companyId);
 
+    @Query("Select d FROM Document d WHERE d.status = SUBMITTED AND d.company.companyId = :comId")
+    List<Document> findByCompanySubmitted(@Param("comId") String companyId);
+
 
 }

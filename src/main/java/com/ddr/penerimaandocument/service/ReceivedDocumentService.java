@@ -2,33 +2,32 @@ package com.ddr.penerimaandocument.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.ddr.penerimaandocument.dto.AddCirculationDocumentDTO;
-import com.ddr.penerimaandocument.dto.DeleteCirculationDocumentDTO;
-import com.ddr.penerimaandocument.dto.UpdateCirculationDocumentDTO;
-import com.ddr.penerimaandocument.model.CirculationDocument;
+import com.ddr.penerimaandocument.dto.AddReceivedDocumentDTO;
+import com.ddr.penerimaandocument.dto.DeleteReceivedDocumentDTO;
+import com.ddr.penerimaandocument.dto.UpdateReceivedDocumentDTO;
 import com.ddr.penerimaandocument.model.Document;
+import com.ddr.penerimaandocument.model.ReceivedDocument;
 import com.ddr.penerimaandocument.model.Status;
-import com.ddr.penerimaandocument.repository.CirculationDocumentRepository;
 import com.ddr.penerimaandocument.repository.CompanyRepository;
 import com.ddr.penerimaandocument.repository.DocumentRepository;
+import com.ddr.penerimaandocument.repository.ReceivedDocumentRepository;
 
 @Service
-public class CirculationDocumentService {
-    @Autowired
-    private CirculationDocumentRepository circulationDocumentRepository;
-
+public class ReceivedDocumentService {
 	@Autowired
 	private CompanyRepository companyRepository;
 
 	@Autowired DocumentRepository documentRepository;
 
-	public CirculationDocumentService() {
+    @Autowired
+    private ReceivedDocumentRepository receivedDocumentRepository;
+
+	public ReceivedDocumentService() {
 	}
 
-	public void addCirculationDocument(AddCirculationDocumentDTO req){
-		CirculationDocument data = new CirculationDocument();
-		data.setCirculationDocId(req.getCirculationDocumentId());
+	public void addReceivedDocument(AddReceivedDocumentDTO req){
+		ReceivedDocument data = new ReceivedDocument();
+		data.setReceivedDocumentId(req.getReceivedDocumentId());
 		data.setClosed(false);
 		data.setCompany(companyRepository.getReferenceById(req.getCompanyTo()));
 		data.setDocumentsId(req.getDocumentsId());
@@ -38,18 +37,18 @@ public class CirculationDocumentService {
 
 		for (String i : req.getDocumentsId()){
 			Document doc = documentRepository.getReferenceById(i);
-			doc.setStatus(Status.SUBMITTED);
+			doc.setStatus(Status.RECEIVED);
 			documentRepository.save(doc);
 		}
-		circulationDocumentRepository.save(data);
+		receivedDocumentRepository.save(data);
 	}
 
-	public void updateCirculationDocument(UpdateCirculationDocumentDTO req){
-		CirculationDocument data = circulationDocumentRepository.getReferenceById(req.getCirculationDocumentId());
+	public void updateReceivedDocument(UpdateReceivedDocumentDTO req){
+		ReceivedDocument data = receivedDocumentRepository.getReferenceById(req.getReceivedDocumentId());
 
 		for (String i : data.getDocumentsId()){
 			Document doc = documentRepository.getReferenceById(i);
-			doc.setStatus(Status.DRAFT);
+			doc.setStatus(Status.SUBMITTED);
 			documentRepository.save(doc);
 		}
 
@@ -60,17 +59,17 @@ public class CirculationDocumentService {
 
 		for (String i : req.getDocumentsId()){
 			Document doc = documentRepository.getReferenceById(i);
-			doc.setStatus(Status.SUBMITTED);
+			doc.setStatus(Status.RECEIVED);
 			documentRepository.save(doc);
 		}
 		
-		circulationDocumentRepository.save(data);
+		receivedDocumentRepository.save(data);
 	}
 
-	public void delete(DeleteCirculationDocumentDTO req){
+	public void delete(DeleteReceivedDocumentDTO req){
 
-		for (String i : req.getCirculationsValue()){
-			circulationDocumentRepository.deleteById(i);
+		for (String i : req.getReceivedValue()){
+			receivedDocumentRepository.deleteById(i);
 		}
 	}
 }

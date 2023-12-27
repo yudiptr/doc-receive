@@ -61,7 +61,7 @@ public class CirculationDocumentController {
     }
 
      @GetMapping("/{circlDocId}")
-    public String getDocsByCompany(@PathVariable("circlDocId") String circlId, Model model) {
+    public String updateCirculationDocument(@PathVariable("circlDocId") String circlId, Model model) {
         CirculationDocument data = circulationDocumentRepository.getReferenceById(circlId);
 
         List<Document> dataDocument = new ArrayList<>();

@@ -11,6 +11,7 @@ import com.ddr.penerimaandocument.dto.LoginResponseDTO;
 import com.ddr.penerimaandocument.service.UtilService;
 import org.springframework.beans.factory.ObjectFactory;
 import jakarta.servlet.http.HttpSession;
+import java.io.IOException;
 
 @Controller
 public class GeneralController {
@@ -22,7 +23,7 @@ public class GeneralController {
 	private UtilService utilService;
 
     @GetMapping(path = "/")
-    public String hello(Model model){
+    public String hello(Model model) throws IOException, InterruptedException{
         return "index";
     }
 
@@ -43,6 +44,31 @@ public class GeneralController {
         LoginResponseDTO res =utilService.authenticate(dataUser);
         session.setAttribute("token", res.getToken());
         return "redirect:/";
+    }
+
+    public void performDatabaseDump() throws IOException, InterruptedException {
+        String dbName = "doc-receive";
+        String username = "postgres";
+        String password = "yudisabri123";
+        String dumpPath = "C:\\Users\\YudiSabri\\Desktop\\iniPGDUMP.sql";
+        String pgDumpPath = "C:\\Program Files\\PostgreSQL\\14\\bin\\pg_dump.exe";
+
+        ProcessBuilder processBuilder = new ProcessBuilder(
+            pgDumpPath, "-p", "5432", "-U", username, "-d", dbName, "-f", dumpPath
+        );
+
+
+        processBuilder.environment().put("PGPASSWORD", password);
+
+        Process process = processBuilder.start();
+        int exitCode = process.waitFor();
+
+        System.out.println(process);
+        if (exitCode == 0) {
+            System.out.println("Database dump completed successfully!");
+        } else {
+            System.err.println("Error: Database dump failed!");
+        }
     }
     
 }
