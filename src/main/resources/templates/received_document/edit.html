@@ -14,6 +14,11 @@
             const tempDocs = $('[id*=DOC]');
             tempDocs.each((id, res) => {
                 selectedValues[res.id] = true;
+                var dropdown = document.getElementById("selectedCompanyTest");
+                var preOption = document.createElement('option');
+                preOption.value = res.id;
+                preOption.text = res.id;
+                dropdown.appendChild(preOption);
             })
 
             
@@ -177,7 +182,7 @@
                                                 <div class="mt-3">
                                                     <h4>Selected Options</h4>
                                                     <div id="selectedOptionsContainer">
-                                                        <div th:each="doc:${docs}" th:id="${doc.documentId}" th:text="${doc.documentId}" class="badge badge-info mr-2"></div>
+                                                        <div th:each="doc:${docs}" th:id="${doc.documentId}" th:value="${doc.documentId}" th:text="${doc.documentId}" class="badge badge-info mr-2"></div>
                                                     </div>
                                                 </div>
                                             </div>

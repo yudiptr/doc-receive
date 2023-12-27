@@ -14,6 +14,11 @@
             const tempDocs = $('[id*=DOC]');
             tempDocs.each((id, res) => {
                 selectedValues[res.id] = true;
+                var dropdown = document.getElementById("selectedCompanyTest");
+                var preOption = document.createElement('option');
+                preOption.value = res.id;
+                preOption.text = res.id;
+                dropdown.appendChild(preOption);
             })
 
             
