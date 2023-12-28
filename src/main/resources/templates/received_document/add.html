@@ -44,8 +44,8 @@
                             dropdown.appendChild(preOption);
                             res.documents.forEach((option) => {
                                 var newOption = document.createElement('option');
-                                newOption.value = option.documentId;
-                                newOption.text = option.documentId;
+                                newOption.value = option.circulationDocId;
+                                newOption.text = option.circulationDocId;
                                 dropdown.appendChild(newOption);
                             })
                             $('#selectedOptionsContainer').html('')

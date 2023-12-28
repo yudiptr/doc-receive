@@ -60,6 +60,16 @@ public class CirculationDocumentController {
         return ResponseEntity.ok(res);
     }
 
+    @GetMapping("/edit/docs/{companyId}")
+    public ResponseEntity<GetAllDocumentByCompanyResponseDTO> getEditDocsByCompany(@PathVariable("companyId") String Cid) {
+        GetAllDocumentByCompanyResponseDTO res = new GetAllDocumentByCompanyResponseDTO();
+        List<Document> data = documentRepository.findByCompanyDraft(Cid);
+        List<Document> data2 = documentRepository.findByCompanySubmitted(Cid);
+        data.addAll(data2);
+        res.setDocuments(data.stream().toArray(Document[]::new));
+        return ResponseEntity.ok(res);
+    }
+
      @GetMapping("/{circlDocId}")
     public String updateCirculationDocument(@PathVariable("circlDocId") String circlId, Model model) {
         CirculationDocument data = circulationDocumentRepository.getReferenceById(circlId);

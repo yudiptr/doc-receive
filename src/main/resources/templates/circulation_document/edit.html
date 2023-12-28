@@ -11,25 +11,23 @@
 
         $(document).ready(function(){
             var selectedValues = {};
-            const tempDocs = $('[id*=DOC]');
-            tempDocs.each((id, res) => {
-                selectedValues[res.id] = true;
-                var dropdown = document.getElementById("selectedCompanyTest");
-                var preOption = document.createElement('option');
-                preOption.value = res.id;
-                preOption.text = res.id;
-                dropdown.appendChild(preOption);
+            var docIds = $('#selectedOptionsContainer > div').map(function() {
+                return $(this).text().trim();
+            }).get();
+
+            docIds.forEach((id) => {
+                selectedValues[id] = true;
             })
 
             
             $('#selectedCompanyTest').change(function(){
                 $('#selectedCompanyTest option:selected').each(function(){
-                    console.log(selectedValues);
                     var selectedText = $(this).text();
                     var selectedValue = $(this).val();
+                    var textId = $(this).attr('id')
                     if (!selectedValues[selectedText]  && selectedValue != "") {
                         selectedValues[selectedText] = true;
-                        $('#selectedOptionsContainer').append('<div class="badge badge-info mr-2" id="' +selectedText+'">' + selectedText + '</div>');
+                        $('#selectedOptionsContainer').append('<div class="badge badge-info mr-2" id="' +textId+'">' + selectedText + '</div>');
                     }
                 });
             });
@@ -43,7 +41,7 @@
 
                     $.ajax({
                         type: "get",
-                        url: "docs/" + selectedValue,
+                        url: "edit/docs/" + selectedValue,
                         success: function (res) {
                             var dropdown = document.getElementById("selectedCompanyTest");
 
@@ -58,6 +56,7 @@
                                 var newOption = document.createElement('option');
                                 newOption.value = option.documentId;
                                 newOption.text = option.documentId;
+                                newOption.id = option.documentId;
                                 dropdown.appendChild(newOption);
                             })
 
@@ -73,7 +72,7 @@
 
             $('#selectedOptionsContainer').on('click', '.badge', function(e){
                 var deselectedValue = $(this).attr('data-value');
-                var dId = $(this).attr("id")
+                var dId = $(this).text().trim()
                 selectedValues[dId] = false;
                 $('#selectedCompanyTest option[value="' + deselectedValue + '"]').prop('selected', false);
                 $(this).remove();
@@ -86,6 +85,7 @@
             const selectedDocId = []
             
             temp.each((idx, data) => {
+                console.log(data)
                 selectedDocId.push(data.id)
             })
 
@@ -176,13 +176,14 @@
                                             <div class="container mt-4">
                                                 <h3>Select Options</h3>
                                                 <select id="selectedCompanyTest" class="w-25">
-                                                    <option th:each="doc:${allDocs}" th:text="${doc.documentId}"></option>
+                                                    <option th:each="doc:${docs}" th:id="${doc.documentId}" th:value="${doc.invoiceRef}" th:text="${doc.documentId} + ' -- ' + ${doc.invoiceRef}"></option>
+                                                    <option th:each="doc:${allDocs}" th:id="${doc.documentId}" th:value="${doc.invoiceRef}" th:text="${doc.documentId} + ' -- ' + ${doc.invoiceRef}"></option>
                                                 </select>
                                         
                                                 <div class="mt-3">
                                                     <h4>Selected Options</h4>
                                                     <div id="selectedOptionsContainer">
-                                                        <div th:each="doc:${docs}" th:id="${doc.documentId}" th:text="${doc.documentId}" class="badge badge-info mr-2"></div>
+                                                        <div th:each="doc:${docs}" th:id="${doc.documentId}" th:text="${doc.documentId} + ' -- ' + ${doc.invoiceRef}" class="badge badge-info mr-2"></div>
                                                     </div>
                                                 </div>
                                             </div>

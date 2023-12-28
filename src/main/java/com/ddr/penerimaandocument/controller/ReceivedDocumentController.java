@@ -9,10 +9,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.ddr.penerimaandocument.dto.AddReceivedDocumentDTO;
 import com.ddr.penerimaandocument.dto.DeleteReceivedDocumentDTO;
-import com.ddr.penerimaandocument.dto.GetAllDocumentByCompanyResponseDTO;
+import com.ddr.penerimaandocument.dto.GetAllCirculationDocumentByCompanyResponseDTO;
 import com.ddr.penerimaandocument.dto.UpdateReceivedDocumentDTO;
-import com.ddr.penerimaandocument.model.Document;
+import com.ddr.penerimaandocument.model.CirculationDocument;
 import com.ddr.penerimaandocument.model.ReceivedDocument;
+import com.ddr.penerimaandocument.repository.CirculationDocumentRepository;
 import com.ddr.penerimaandocument.repository.CompanyRepository;
 import com.ddr.penerimaandocument.repository.DocumentRepository;
 import com.ddr.penerimaandocument.repository.VendorRepository;
@@ -20,6 +21,8 @@ import com.ddr.penerimaandocument.repository.ReceivedDocumentRepository;
 import com.ddr.penerimaandocument.service.ReceivedDocumentService;
 import java.text.SimpleDateFormat;
 import java.util.List;
+
+import org.apache.hc.client5.http.CircularRedirectException;
 import org.springframework.beans.factory.ObjectFactory;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,13 +52,16 @@ public class ReceivedDocumentController {
 
     @Autowired
     ReceivedDocumentService receivedDocumentService;
+    
+    @Autowired
+    CirculationDocumentRepository circulationDocumentRepository;
 
 
     @GetMapping("/docs/{companyId}")
-    public ResponseEntity<GetAllDocumentByCompanyResponseDTO> getDocsByCompany(@PathVariable("companyId") String Cid) {
-        GetAllDocumentByCompanyResponseDTO res = new GetAllDocumentByCompanyResponseDTO();
-        List<Document> data = documentRepository.findByCompanySubmitted(Cid);
-        res.setDocuments(data.stream().toArray(Document[]::new));
+    public ResponseEntity<GetAllCirculationDocumentByCompanyResponseDTO> getDocsByCompany(@PathVariable("companyId") String Cid) {
+        GetAllCirculationDocumentByCompanyResponseDTO res = new GetAllCirculationDocumentByCompanyResponseDTO();
+        List<CirculationDocument> data = circulationDocumentRepository.findByCompanySubmitted(Cid);
+        res.setDocuments(data.stream().toArray(CirculationDocument[]::new));
         return ResponseEntity.ok(res);
     }
 
@@ -63,11 +69,11 @@ public class ReceivedDocumentController {
     public String updateReceivedDocument(@PathVariable("receiveId") String receiveId, Model model) {
         ReceivedDocument data = receivedDocumentRepository.getReferenceById(receiveId);
 
-        List<Document> dataDocument = new ArrayList<>();
-        List<Document> dataAllDocument = documentRepository.findByCompanySubmitted(data.getCompany().getCompanyId());
+        List<CirculationDocument> dataDocument = new ArrayList<>();
+        List<CirculationDocument> dataAllDocument = circulationDocumentRepository.findByCompanySubmitted(data.getCompany().getCompanyId());
  
         for (String i : data.getDocumentsId()){
-            Document temp = documentRepository.getReferenceById(i);
+            CirculationDocument temp = circulationDocumentRepository.getReferenceById(i);
             dataDocument.add(temp);
         }
 
