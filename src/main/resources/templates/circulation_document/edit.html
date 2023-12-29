@@ -25,6 +25,7 @@
                     var selectedText = $(this).text();
                     var selectedValue = $(this).val();
                     var textId = $(this).attr('id')
+                    if(textId == undefined) return;
                     if (!selectedValues[selectedText]  && selectedValue != "") {
                         selectedValues[selectedText] = true;
                         $('#selectedOptionsContainer').append('<div class="badge badge-info mr-2" id="' +textId+'">' + selectedText + '</div>');
@@ -37,11 +38,14 @@
                 $('#selectedCompany option:selected').each(function(){
                     var selectedValue = $(this).val();
                     var selectedText = $(this).text();
+                    var docSplit = window.location.pathname.split("/");
+                    var circlId = docSplit[2]
+                    console.log(circlId)
                     
 
                     $.ajax({
                         type: "get",
-                        url: "edit/docs/" + selectedValue,
+                        url: "edit/docs/" + selectedValue + '/' + circlId,
                         success: function (res) {
                             var dropdown = document.getElementById("selectedCompanyTest");
 
@@ -55,10 +59,11 @@
                             res.documents.forEach((option) => {
                                 var newOption = document.createElement('option');
                                 newOption.value = option.documentId;
-                                newOption.text = option.documentId;
+                                newOption.text = option.documentId + ' -- ' + option.invoiceRef;
                                 newOption.id = option.documentId;
                                 dropdown.appendChild(newOption);
                             })
+                            selectedValues = {}
 
                             $('#selectedOptionsContainer').html('')
 
@@ -85,7 +90,6 @@
             const selectedDocId = []
             
             temp.each((idx, data) => {
-                console.log(data)
                 selectedDocId.push(data.id)
             })
 
@@ -176,6 +180,7 @@
                                             <div class="container mt-4">
                                                 <h3>Select Options</h3>
                                                 <select id="selectedCompanyTest" class="w-25">
+                                                    <option style='color: gray; cursor: default; pointer-events: none;'>Select an Document</option>
                                                     <option th:each="doc:${docs}" th:id="${doc.documentId}" th:value="${doc.invoiceRef}" th:text="${doc.documentId} + ' -- ' + ${doc.invoiceRef}"></option>
                                                     <option th:each="doc:${allDocs}" th:id="${doc.documentId}" th:value="${doc.invoiceRef}" th:text="${doc.documentId} + ' -- ' + ${doc.invoiceRef}"></option>
                                                 </select>

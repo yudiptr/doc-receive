@@ -97,13 +97,19 @@
                                     <th>Date</th>
                                     <th>Created by</th>
                                     <th>Ref Description</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <!-- Loop melalui list of companies -->
                                 <tr th:each="docs, index : ${circulation_document}">
                                     <td>
-                                        <input type="checkbox" th:id="'deleteCheckbox' + ${index.index}" th:name="'deleteCheckbox' + ${index.index}" th:value="${docs.circulationDocId}">
+                                        <input 
+                                            th:disabled="${docs.isClosed ? 'disabled' : null}"
+                                            type="checkbox" 
+                                            th:id="'deleteCheckbox' + ${index.index}" 
+                                            th:name="'deleteCheckbox' + ${index.index}" 
+                                            th:value="${docs.circulationDocId}">
                                     </td>
                                     <td th:text="${docs.circulationDocId}"></td>
                                     <td th:text="${docs.company.companyName}"></td>
@@ -111,6 +117,7 @@
                                     <td th:text="${#dates.format(docs.createdAt, 'dd/MM/yy')}"></td>
                                     <td th:text="${docs.createdBy}"></td>
                                     <td th:text="${docs.refDescription}"></td>
+                                    <td th:text="${docs.isClosed} ? 'Received' : 'Submitted' "></td>
                                 </tr>
                             </tbody>
                         </table>

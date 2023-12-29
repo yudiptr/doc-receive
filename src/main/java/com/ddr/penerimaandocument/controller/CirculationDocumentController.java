@@ -18,8 +18,12 @@ import com.ddr.penerimaandocument.repository.CompanyRepository;
 import com.ddr.penerimaandocument.repository.DocumentRepository;
 import com.ddr.penerimaandocument.repository.VendorRepository;
 import com.ddr.penerimaandocument.service.CirculationDocumentService;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.ObjectFactory;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,13 +64,30 @@ public class CirculationDocumentController {
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/edit/docs/{companyId}")
-    public ResponseEntity<GetAllDocumentByCompanyResponseDTO> getEditDocsByCompany(@PathVariable("companyId") String Cid) {
+    @GetMapping("/edit/docs/{companyId}/{circlId}")
+    @JsonIgnore
+    public ResponseEntity<GetAllDocumentByCompanyResponseDTO> getEditDocsByCompany(@PathVariable("companyId") String Cid, @PathVariable("circlId") String cirId) {
         GetAllDocumentByCompanyResponseDTO res = new GetAllDocumentByCompanyResponseDTO();
         List<Document> data = documentRepository.findByCompanyDraft(Cid);
+        System.out.println(data);
         List<Document> data2 = documentRepository.findByCompanySubmitted(Cid);
-        data.addAll(data2);
+        CirculationDocument data3 = circulationDocumentRepository.getReferenceById(cirId);
+
+        String[] documentIds = data3.getDocumentsId();
+
+        List<Document> filteredData2 = new ArrayList<>();
+        for (Document doc : data2) {
+            for (String documentId : documentIds) {
+                if (doc.getDocumentId().equals(documentId)) {
+                    filteredData2.add(doc);
+                    break;
+                }
+            }
+        }
+
+        data.addAll(filteredData2);
         res.setDocuments(data.stream().toArray(Document[]::new));
+        
         return ResponseEntity.ok(res);
     }
 
@@ -103,7 +124,7 @@ public class CirculationDocumentController {
 
     @GetMapping("/")
     public String showCirculationDocument(Model model) {
-        List<CirculationDocument> data = circulationDocumentRepository.findByIsClosed();
+        List<CirculationDocument> data = circulationDocumentRepository.findAll();
 
         model.addAttribute("circulation_document", data);
         return "circulation_document/list";

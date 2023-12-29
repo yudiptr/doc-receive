@@ -45,30 +45,4 @@ public class GeneralController {
         session.setAttribute("token", res.getToken());
         return "redirect:/";
     }
-
-    public void performDatabaseDump() throws IOException, InterruptedException {
-        String dbName = "doc-receive";
-        String username = "postgres";
-        String password = "yudisabri123";
-        String dumpPath = "C:\\Users\\YudiSabri\\Desktop\\iniPGDUMP.sql";
-        String pgDumpPath = "C:\\Program Files\\PostgreSQL\\14\\bin\\pg_dump.exe";
-
-        ProcessBuilder processBuilder = new ProcessBuilder(
-            pgDumpPath, "-p", "5432", "-U", username, "-d", dbName, "-f", dumpPath
-        );
-
-
-        processBuilder.environment().put("PGPASSWORD", password);
-
-        Process process = processBuilder.start();
-        int exitCode = process.waitFor();
-
-        System.out.println(process);
-        if (exitCode == 0) {
-            System.out.println("Database dump completed successfully!");
-        } else {
-            System.err.println("Error: Database dump failed!");
-        }
-    }
-    
 }

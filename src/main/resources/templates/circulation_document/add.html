@@ -13,12 +13,12 @@
             var selectedValues = {};
             $('#selectedCompanyTest').change(function(){
                 $('#selectedCompanyTest option:selected').each(function(){
-                    console.log(selectedValues);
                     var selectedText = $(this).text();
                     var selectedValue = $(this).val();
+                    var textId = $(this).attr('id')
                     if (!selectedValues[selectedText]  && selectedValue != "") {
                         selectedValues[selectedText] = true;
-                        $('#selectedOptionsContainer').append('<div class="badge badge-info mr-2" id="' +selectedText+'">' + selectedText + '</div>');
+                        $('#selectedOptionsContainer').append('<div class="badge badge-info mr-2" id="' +textId+'">' + selectedText + '</div>');
                     }
                 });
             });
@@ -46,10 +46,12 @@
                             res.documents.forEach((option) => {
                                 var newOption = document.createElement('option');
                                 newOption.value = option.documentId;
-                                newOption.text = option.documentId;
+                                newOption.text = option.documentId + ' -- ' + option.invoiceRef;
+                                newOption.id = option.documentId;
                                 dropdown.appendChild(newOption);
                             })
                             $('#selectedOptionsContainer').html('')
+                            selectedValues = {}
                         },
                         error: (err) => {
                             console.log(err)
@@ -60,7 +62,7 @@
 
             $('#selectedOptionsContainer').on('click', '.badge', function(e){
                 var deselectedValue = $(this).attr('data-value');
-                var dId = $(this).attr("id")
+                var dId = $(this).text().trim()
                 selectedValues[dId] = false;
                 $('#selectedCompanyTest option[value="' + deselectedValue + '"]').prop('selected', false);
                 $(this).remove();
