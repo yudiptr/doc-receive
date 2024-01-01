@@ -1,11 +1,7 @@
 package com.ddr.penerimaandocument.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
 import com.ddr.penerimaandocument.dto.CreateMasterCompanyRequestDTO;
 import com.ddr.penerimaandocument.dto.DeleteCompanyRequestDTO;
 import com.ddr.penerimaandocument.dto.EditMasterCompanyDTO;
@@ -16,24 +12,8 @@ import com.ddr.penerimaandocument.repository.CompanyRepository;
 
 @Service
 public class CompanyService {
-    
-    private final RestTemplate restTemplate;
-
     @Autowired
     private CompanyRepository companyRepository;
-	
-	@Value("${host.and.port.hris}")
-	private String HOST_AND_PORT_HRIS;
-		
-	@Value("${openendpoint.getauth}")
-	private String GET_AUTH;
-	
-	@Value("${openendpoint.getallcompany}")
-	private String GET_ALL_COMPANY;
-
-	public CompanyService(@Qualifier("restTemplateHttp")RestTemplate restTemplate) {
-		this.restTemplate = restTemplate;
-	}
     
     public List<Company> getAllVendor(){
         return companyRepository.findAll();

@@ -22,6 +22,8 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/company")
 public class CompanyController {
+
+    private final Integer CODE_MENU = 2;
     
     @Autowired
     ObjectFactory<HttpSession> httpSessionFactory;

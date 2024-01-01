@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Controller
 @RequestMapping("/document-in")
 public class DocumenIntController {
+
+    private final Integer CODE_MENU = 3;
     
    @Autowired
     ObjectFactory<HttpSession> httpSessionFactory;

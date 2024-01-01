@@ -31,10 +31,6 @@ public class DocumentService {
 	@Autowired 
 	VendorRepository vendorRepository;
 
-	@Autowired
-	public DocumentService() {
-	}
-
 	public ResponseEntity<?> addDocument(AddDocumentReqDTO req){
 
 		String UPLOAD_DIR = "C:\\Users\\YudiSabri\\Desktop\\docReceive\\";

@@ -13,8 +13,7 @@ public class TokenFilter implements Filter {
   
   @Autowired
   private JwtService jwtService;
-
-  @Autowired
+  
   public TokenFilter(){
     jwtService = new JwtService();
   }

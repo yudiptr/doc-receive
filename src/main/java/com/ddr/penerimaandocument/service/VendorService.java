@@ -1,10 +1,7 @@
 package com.ddr.penerimaandocument.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import com.ddr.penerimaandocument.dto.CreateMasterVendorRequestDTO;
 import com.ddr.penerimaandocument.dto.DeleteVendorRequestDTO;
 import com.ddr.penerimaandocument.dto.EditMasterVendorDTO;
@@ -15,23 +12,8 @@ import com.ddr.penerimaandocument.repository.VendorRepository;
 @Service
 public class VendorService {
     
-    private final RestTemplate restTemplate;
-
     @Autowired
     private VendorRepository vendorRepository;
-	
-	@Value("${host.and.port.hris}")
-	private String HOST_AND_PORT_HRIS;
-		
-	@Value("${openendpoint.getauth}")
-	private String GET_AUTH;
-	
-	@Value("${openendpoint.getallcompany}")
-	private String GET_ALL_COMPANY;
-
-	public VendorService(@Qualifier("restTemplateHttp")RestTemplate restTemplate) {
-		this.restTemplate = restTemplate;
-	}
     
     public List<Vendor> getAllVendor(){
         return vendorRepository.findAll();

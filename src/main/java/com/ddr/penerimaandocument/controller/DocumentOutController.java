@@ -32,6 +32,8 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/document-out")
 public class DocumentOutController {
     
+    private final Integer CODE_MENU = 4;
+
     @Autowired
     ObjectFactory<HttpSession> httpSessionFactory;
 
