@@ -1,6 +1,7 @@
 package com.ddr.penerimaandocument.service;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -25,17 +26,25 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
+    public String extractRoleFromToken(String token) {
+        // Parse the JWT token to extract claims
+        Claims claims = extractAllClaims(token);
+        String role = (String) claims.get("role");
+        return role;
+    }
+
     public String generateToken(User userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, User userDetails) {
+    public String generateToken(Map<String, String> extraClaims, User userDetails) {
+        extraClaims.put("role", String.valueOf(userDetails.getRole().getId()));
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 2))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -45,8 +54,13 @@ public class JwtService {
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    public boolean isTokenExpired(String token) {
+        try {
+            return extractExpiration(token).before(new Date());
+        }
+        catch (ExpiredJwtException e){
+            return true;
+        }
     }
 
     private Date extractExpiration(String token) {

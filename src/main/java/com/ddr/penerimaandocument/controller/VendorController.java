@@ -15,19 +15,22 @@ import com.ddr.penerimaandocument.dto.EditMasterVendorDTO;
 import com.ddr.penerimaandocument.model.Vendor;
 import com.ddr.penerimaandocument.repository.VendorRepository;
 import java.util.List;
+import com.ddr.penerimaandocument.service.UtilService;
 import com.ddr.penerimaandocument.service.VendorService;
-import org.springframework.beans.factory.ObjectFactory;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/vendor")
 public class VendorController {
-    
-    @Autowired
-    ObjectFactory<HttpSession> httpSessionFactory;
+
+    private final Integer CODE_MENU = 1;
 
     @Autowired
     private VendorService vendorService;
+
+    @Autowired
+    private UtilService utilService;
 
     @Autowired
     private VendorRepository vendorRepository;
@@ -62,7 +65,9 @@ public class VendorController {
     }
 
     @GetMapping(path = "/")
-    public String showVendor(Model model){
+    public String showVendor(Model model, HttpServletRequest request){
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return "redirect:/";
+
         List<Vendor> data = vendorService.getAllVendor();
 
         model.addAttribute("vendors", data);
@@ -87,6 +92,4 @@ public class VendorController {
         model.addAttribute("vendor", data);
         return "vendor/edit";
     }
-    
-    
 }
