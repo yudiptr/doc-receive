@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,8 +16,12 @@ import com.ddr.penerimaandocument.dto.CreateMasterCompanyRequestDTO;
 import com.ddr.penerimaandocument.model.Company;
 import com.ddr.penerimaandocument.repository.CompanyRepository;
 import com.ddr.penerimaandocument.service.CompanyService;
+import com.ddr.penerimaandocument.service.UtilService;
+
 import java.util.List;
 import org.springframework.beans.factory.ObjectFactory;
+
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -32,10 +37,14 @@ public class CompanyController {
     private CompanyService companyService;
 
     @Autowired
+    private UtilService utilService;
+
+    @Autowired
     private CompanyRepository companyRepository;
 
     @GetMapping(path = "/add")
-    public String addCompany(Model model){
+    public String addCompany(Model model, HttpServletRequest request){
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return "redirect:/";
         String cid = companyService.testGetData();
 
         if (cid == null){
@@ -56,14 +65,16 @@ public class CompanyController {
     }
 
     @PostMapping("/add-company")
-    public ResponseEntity<?> addCompanyPost(@RequestBody CreateMasterCompanyRequestDTO entity) {
+    public ResponseEntity<?> addCompanyPost(@RequestBody CreateMasterCompanyRequestDTO entity, HttpServletRequest request) {
+         if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
+        
         companyService.addMasterCompany(entity);
         return ResponseEntity.ok("Add Success");
     }
     
-    
     @GetMapping(path = "/")
-    public String showCompany(Model model){
+    public String showCompany(Model model, HttpServletRequest request){
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return "redirect:/";
         List<Company> data = companyService.getAllVendor();
 
         model.addAttribute("companies", data);
@@ -71,20 +82,26 @@ public class CompanyController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<?> deleteCompany(@RequestBody DeleteCompanyRequestDTO req) {
+    public ResponseEntity<?> deleteCompany(@RequestBody DeleteCompanyRequestDTO req, HttpServletRequest request) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
+        
         companyService.deleteCompany(req);
         return ResponseEntity.ok("Delete Success");
     }
 
     @GetMapping("/{companyId}")
-    public String editCompany(@PathVariable("companyId") String Cid, Model model) {
+    public String editCompany(@PathVariable("companyId") String Cid, Model model, HttpServletRequest request) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return "redirect:/";
+
         Company data = companyRepository.getReferenceById(Cid);
         model.addAttribute("company", data);
         return "company/edit";
     }
     
     @PostMapping("/edit-company")
-    public ResponseEntity<?> editCompanyPost(@RequestBody EditMasterCompanyDTO entity) {
+    public ResponseEntity<?> editCompanyPost(@RequestBody EditMasterCompanyDTO entity, HttpServletRequest request) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
+        
         companyService.editMasterCompany(entity);
         return ResponseEntity.ok("Edit Success");
     }

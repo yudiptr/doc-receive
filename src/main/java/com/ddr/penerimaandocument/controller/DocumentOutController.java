@@ -5,28 +5,29 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-
 import com.ddr.penerimaandocument.repository.CompanyRepository;
 import com.ddr.penerimaandocument.repository.DocumentRepository;
 import com.ddr.penerimaandocument.repository.VendorRepository;
 import com.ddr.penerimaandocument.service.DocumentService;
+import com.ddr.penerimaandocument.service.UtilService;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import com.ddr.penerimaandocument.dto.AddDocumentReqDTO;
 import com.ddr.penerimaandocument.dto.DeleteDocumentDTO;
 import com.ddr.penerimaandocument.dto.EditDocumentReqDTO;
 import com.ddr.penerimaandocument.model.Document;
 import com.ddr.penerimaandocument.model.DocumentType;
-import org.springframework.beans.factory.ObjectFactory;
-import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/document-out")
@@ -35,22 +36,24 @@ public class DocumentOutController {
     private final Integer CODE_MENU = 4;
 
     @Autowired
-    ObjectFactory<HttpSession> httpSessionFactory;
+    private DocumentRepository documentRepository;
 
     @Autowired
-    DocumentRepository documentRepository;
+    private DocumentService documentService;
 
     @Autowired
-    DocumentService documentService;
+    private CompanyRepository companyRepository;
 
     @Autowired
-    CompanyRepository companyRepository;
+    private VendorRepository vendorRepository;
 
     @Autowired
-    VendorRepository vendorRepository;
+    private UtilService utilService;
 
     @GetMapping(path = "/")
-    public String showDocumentOut(Model model){
+    public String showDocumentOut(Model model, HttpServletRequest request){
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return "redirect:/";
+
         
         List<Document> data = documentRepository.findByType(DocumentType.OUT);
         model.addAttribute("document", data);
@@ -58,7 +61,10 @@ public class DocumentOutController {
     }
 
     @GetMapping("/add")
-    public String addDocument(Model model) {
+    public String addDocument(Model model, HttpServletRequest request) {
+
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return "redirect:/";
+
         String docId = documentRepository.findLastIn();
 
         if (docId == null){
@@ -95,8 +101,9 @@ public class DocumentOutController {
     
 
     @PostMapping("/save")
-    public ResponseEntity<?> saveDocument(@RequestParam("addDocumentData[]") String[] data, @RequestParam("file") MultipartFile file) {
-
+    public ResponseEntity<?> saveDocument(HttpServletRequest request, @RequestParam("addDocumentData[]") String[] data, @RequestParam("file") MultipartFile file) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
+        
         AddDocumentReqDTO req = new AddDocumentReqDTO();
         req.setDocumentId(data[0]);
         req.setDescription(data[1]);
@@ -117,8 +124,10 @@ public class DocumentOutController {
     }
 
     @PostMapping("/edit")
-    public ResponseEntity<?> editDocument(@RequestParam("editDocumentData[]") String[] data, @RequestParam(value="file", required = false) MultipartFile file) {
+    public ResponseEntity<?> editDocument(@RequestParam("editDocumentData[]") String[] data,HttpServletRequest request, @RequestParam(value="file", required = false) MultipartFile file) {
 
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
+        
         EditDocumentReqDTO req = new EditDocumentReqDTO();
         req.setDocumentId(data[0]);
         req.setDescription(data[1]);
@@ -136,14 +145,18 @@ public class DocumentOutController {
     }
 
     @PostMapping("/delete")
-    public String deleteDocument(@RequestBody DeleteDocumentDTO req) {
+    public String deleteDocument(@RequestBody DeleteDocumentDTO req, HttpServletRequest request) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return "redirect:/";
+
         documentService.delete(req);
 
         return "document/in";
     }
 
     @GetMapping("/{documentId}")
-    public String getMethodName(@PathVariable("documentId") String documentId, Model model) {
+    public String getMethodName(@PathVariable("documentId") String documentId, Model model, HttpServletRequest request) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return "redirect:/";
+
         Document data = documentRepository.getReferenceById(documentId);
         model.addAttribute("doc", data);
         model.addAttribute("companies", companyRepository.getAllCompanyName());

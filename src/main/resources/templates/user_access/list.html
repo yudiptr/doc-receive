@@ -19,8 +19,9 @@
                 });
                 
                 const dataToSend = {
-                    uamJoinId: temp
+                    userId: temp
                 }
+
                 $.ajax({
                     url: 'delete',
                     type: 'POST',
@@ -39,16 +40,16 @@
                 })
             }
 
-            function addMenuList(){
+            function addUser(){
                 var selectRole = document.getElementById("selectedRole");
                 var selectedRole = selectRole.value;
-
-                var selectMenu = document.getElementById("selectedMenu");
-                var selectedMenu = selectMenu.value;
+                var uname =  $("#username").val();
+                var pw =  $("#password").val()
 
                 const dataToSend = {
-                    role: selectedRole,
-                    menu: selectedMenu
+                    username : uname,
+                    password: pw,
+                    role : parseInt(selectedRole)
                 }
 
                 $.ajax({
@@ -57,7 +58,7 @@
                 data: JSON.stringify(dataToSend),
                 contentType: 'application/json',
                 success: function () {
-                    window.location.href = "/menu-list/";
+                    window.location.href = "/user-access/";
                 },
                 error: (err) => {
                     console.log(err)
@@ -70,43 +71,43 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0 text-dark">User Menu</h1>
+                    <h1 class="m-0 text-dark">User Access</h1>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <button class="btn btn-danger m-2" type="button" onclick="deleteSelected()">Delete Selected</button>
                         <button class="btn btn-primary m-2" data-toggle="modal" data-target="#exampleModal">
-                            Add Menu Role
+                            Add User
                         </button>
                         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">Add Menu Role</h5>
+                                    <h5 class="modal-title" id="exampleModalLabel">Add User</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                     </div>
                                     <div class="modal-body">
-                                        <form>
+                                        <div>
+                                            <div class="form-group">
+                                                <input id="username" type="text" class="form-control" placeholder="Username" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <input id="password" type="password" class="form-control" placeholder="Password" required>
+                                            </div>
                                             <div class="form-group">
                                                 <label>Select Role</label> 
                                                 <select id="selectedRole" class="w-25 m-2" required>
                                                     <option th:each="data : ${role}" th:value="${data.id}" th:text="${data.roleName}"></option>
                                                 </select>
                                             </div>
-                                            <div class="form-group">
-                                                <label>Select Menu</label> 
-                                                <select id="selectedMenu" class="w-50 m-2" required>
-                                                    <option th:each="data : ${uam}" th:value="${data.id}" th:text="${data.uamName}"></option>
-                                                </select>
-                                            </div>
-                                        </form>
+                                        </div>
                                     </div>
                                     <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-primary" onclick="addMenuList()">Tambah Role</button>
+                                    <button type="button" class="btn btn-primary" onclick="addUser()">Tambah User</button>
                                     </div>
                                 </div>
                             </div>
@@ -129,18 +130,18 @@
                             <thead class="thead-dark">
                                 <tr>
                                     <th>Select</th>
+                                    <th>Username</th>
                                     <th>Role</th>
-                                    <th>Menu</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <!-- Loop melalui list of companies -->
-                                <tr th:each="data, index : ${menu_role}">
+                                <tr th:each="data, index : ${user}">
                                     <td>
                                         <input type="checkbox" th:id="'deleteCheckbox' + ${index.index}" th:name="'deleteCheckbox' + ${index.index}" th:value="${data.id}">
                                     </td>    
+                                    <td th:text="${data.username}"></td>
                                     <td th:text="${data.role.roleName}"></td>
-                                    <td th:text="${data.uam.uamName}"></td>
                                 </tr>
                             </tbody>
                         </table>

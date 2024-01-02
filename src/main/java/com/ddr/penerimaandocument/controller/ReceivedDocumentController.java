@@ -3,6 +3,7 @@ package com.ddr.penerimaandocument.controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,11 +20,12 @@ import com.ddr.penerimaandocument.repository.DocumentRepository;
 import com.ddr.penerimaandocument.repository.VendorRepository;
 import com.ddr.penerimaandocument.repository.ReceivedDocumentRepository;
 import com.ddr.penerimaandocument.service.ReceivedDocumentService;
+import com.ddr.penerimaandocument.service.UtilService;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import java.text.SimpleDateFormat;
 import java.util.List;
-
-import org.springframework.beans.factory.ObjectFactory;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.PostMapping;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,8 +36,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/received-document")
 public class ReceivedDocumentController {
     
-   @Autowired
-    ObjectFactory<HttpSession> httpSessionFactory;
+   private final Integer CODE_MENU = 9;
 
     @Autowired
     DocumentRepository documentRepository;
@@ -55,9 +56,14 @@ public class ReceivedDocumentController {
     @Autowired
     CirculationDocumentRepository circulationDocumentRepository;
 
+    @Autowired
+    private UtilService utilService;
+
 
     @GetMapping("/docs/{companyId}")
-    public ResponseEntity<GetAllCirculationDocumentByCompanyResponseDTO> getDocsByCompany(@PathVariable("companyId") String Cid) {
+    public ResponseEntity<?> getDocsByCompany(HttpServletRequest request, @PathVariable("companyId") String Cid) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
+        
         GetAllCirculationDocumentByCompanyResponseDTO res = new GetAllCirculationDocumentByCompanyResponseDTO();
         List<CirculationDocument> data = circulationDocumentRepository.findByCompanySubmitted(Cid);
         res.setDocuments(data.stream().toArray(CirculationDocument[]::new));
@@ -65,7 +71,9 @@ public class ReceivedDocumentController {
     }
 
     @GetMapping("/{receiveId}")
-    public String updateReceivedDocument(@PathVariable("receiveId") String receiveId, Model model) {
+    public String updateReceivedDocument(@PathVariable("receiveId") String receiveId, Model model, HttpServletRequest request) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return "redirect:/";
+
         ReceivedDocument data = receivedDocumentRepository.getReferenceById(receiveId);
 
         List<CirculationDocument> dataDocument = new ArrayList<>();
@@ -84,19 +92,25 @@ public class ReceivedDocumentController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addReceivedDocument(@RequestBody AddReceivedDocumentDTO req) {
+    public ResponseEntity<?> addReceivedDocument(HttpServletRequest request, @RequestBody AddReceivedDocumentDTO req) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
+        
         receivedDocumentService.addReceivedDocument(req);
         return ResponseEntity.ok("Success Add Received Document");
     }
 
     @PostMapping("/update")
-    public ResponseEntity<?> UpdateReceivedDocument(@RequestBody UpdateReceivedDocumentDTO req) {
+    public ResponseEntity<?> UpdateReceivedDocument(HttpServletRequest request, @RequestBody UpdateReceivedDocumentDTO req) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
+        
         receivedDocumentService.updateReceivedDocument(req);
         return ResponseEntity.ok("Success Update Received Document");
     }
 
     @GetMapping("/")
-    public String showReceivedDocument(Model model) {
+    public String showReceivedDocument(Model model, HttpServletRequest request) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return "redirect:/";
+
         List<ReceivedDocument> data = receivedDocumentRepository.findByIsClosed();
 
         model.addAttribute("received_document", data);
@@ -104,14 +118,18 @@ public class ReceivedDocumentController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<?> deleteReceivedDocument(@RequestBody DeleteReceivedDocumentDTO req) {
+    public ResponseEntity<?> deleteReceivedDocument(HttpServletRequest request, @RequestBody DeleteReceivedDocumentDTO req) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
+        
         receivedDocumentService.delete(req);
         return ResponseEntity.ok("Delete Success");
     }
     
     
     @GetMapping("/add")
-    public String addDocument(Model model) {
+    public String addDocument(Model model, HttpServletRequest request) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return "redirect:/";
+
         String receivedId = receivedDocumentRepository.findLastIn();
 
         if (receivedId == null){

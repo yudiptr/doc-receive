@@ -29,6 +29,13 @@ public class GeneralController {
         return "login";
     }
 
+    @GetMapping("/logout")
+    public String logout(Model model, HttpServletRequest request){
+        HttpSession session = request.getSession();
+        session.removeAttribute("token");
+        return "login";
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO req, HttpServletRequest request) {
         HttpSession session = request.getSession();

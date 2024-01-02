@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,7 +36,8 @@ public class VendorController {
     private VendorRepository vendorRepository;
 
     @GetMapping(path = "/add")
-    public String addVendor(Model model){
+    public String addVendor(Model model, HttpServletRequest request){
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return "redirect:/";
 
         String cid = vendorService.testGetData();
 
@@ -58,7 +60,9 @@ public class VendorController {
     }
 
     @PostMapping(path = "/add-vendor")
-    public ResponseEntity<?> addVendorPost(@RequestBody CreateMasterVendorRequestDTO entity){
+    public ResponseEntity<?> addVendorPost(@RequestBody CreateMasterVendorRequestDTO entity, HttpServletRequest request){
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
+        
         vendorService.addMasterVendor(entity);
         return ResponseEntity.ok("Add Success");
     }
@@ -74,19 +78,24 @@ public class VendorController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<?> deleteCompany(@RequestBody DeleteVendorRequestDTO req) {
+    public ResponseEntity<?> deleteCompany(@RequestBody DeleteVendorRequestDTO req, HttpServletRequest request) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
+        
         vendorService.deleteVendor(req);
         return ResponseEntity.ok("Delete Success");
     }
 
     @PostMapping("/edit-vendor")
-    public ResponseEntity<?> edit(@RequestBody EditMasterVendorDTO entity) {
+    public ResponseEntity<?> edit(@RequestBody EditMasterVendorDTO entity, HttpServletRequest request) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
+        
         vendorService.editMasterVendor(entity);
         return ResponseEntity.ok("Edit Success");
     }
 
     @GetMapping("/{vendorId}")
-    public String editCompany(@PathVariable("vendorId") String Vid, Model model) {
+    public String editCompany(@PathVariable("vendorId") String Vid, Model model, HttpServletRequest request) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return "redirect:/";
         Vendor data = vendorRepository.getReferenceById(Vid);
         model.addAttribute("vendor", data);
         return "vendor/edit";

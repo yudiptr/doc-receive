@@ -3,6 +3,7 @@ package com.ddr.penerimaandocument.controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,13 +17,14 @@ import com.ddr.penerimaandocument.model.Document;
 import com.ddr.penerimaandocument.repository.CirculationDocumentRepository;
 import com.ddr.penerimaandocument.repository.CompanyRepository;
 import com.ddr.penerimaandocument.repository.DocumentRepository;
-import com.ddr.penerimaandocument.repository.VendorRepository;
 import com.ddr.penerimaandocument.service.CirculationDocumentService;
+import com.ddr.penerimaandocument.service.UtilService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import java.text.SimpleDateFormat;
 import java.util.List;
-import org.springframework.beans.factory.ObjectFactory;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.PostMapping;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,28 +34,29 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Controller
 @RequestMapping("/circulation-document")
 public class CirculationDocumentController {
-    
-   @Autowired
-    ObjectFactory<HttpSession> httpSessionFactory;
+
+    private final Integer CODE_MENU = 8;
 
     @Autowired
-    CirculationDocumentService circulationDocumentService;
+    private CirculationDocumentService circulationDocumentService;
 
     @Autowired
-    DocumentRepository documentRepository;
+    private DocumentRepository documentRepository;
 
     @Autowired
-    CompanyRepository companyRepository;
+    private CompanyRepository companyRepository;
 
     @Autowired
-    VendorRepository vendorRepository;  
+    private UtilService utilService;
 
     @Autowired
-    CirculationDocumentRepository circulationDocumentRepository;
+    private CirculationDocumentRepository circulationDocumentRepository;
 
 
     @GetMapping("/docs/{companyId}")
-    public ResponseEntity<GetAllDocumentByCompanyResponseDTO> getDocsByCompany(@PathVariable("companyId") String Cid) {
+    public ResponseEntity<?> getDocsByCompany(HttpServletRequest request, @PathVariable("companyId") String Cid) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
+        
         GetAllDocumentByCompanyResponseDTO res = new GetAllDocumentByCompanyResponseDTO();
         List<Document> data = documentRepository.findByCompanyDraft(Cid);
         res.setDocuments(data.stream().toArray(Document[]::new));
@@ -62,7 +65,9 @@ public class CirculationDocumentController {
 
     @GetMapping("/edit/docs/{companyId}/{circlId}")
     @JsonIgnore
-    public ResponseEntity<GetAllDocumentByCompanyResponseDTO> getEditDocsByCompany(@PathVariable("companyId") String Cid, @PathVariable("circlId") String cirId) {
+    public ResponseEntity<?> getEditDocsByCompany(HttpServletRequest request, @PathVariable("companyId") String Cid, @PathVariable("circlId") String cirId) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
+        
         GetAllDocumentByCompanyResponseDTO res = new GetAllDocumentByCompanyResponseDTO();
         List<Document> data = documentRepository.findByCompanyDraft(Cid);
         System.out.println(data);
@@ -87,8 +92,10 @@ public class CirculationDocumentController {
         return ResponseEntity.ok(res);
     }
 
-     @GetMapping("/{circlDocId}")
-    public String updateCirculationDocument(@PathVariable("circlDocId") String circlId, Model model) {
+    @GetMapping("/{circlDocId}")
+    public String updateCirculationDocument(HttpServletRequest request, @PathVariable("circlDocId") String circlId, Model model) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return "redirect:/";
+
         CirculationDocument data = circulationDocumentRepository.getReferenceById(circlId);
 
         List<Document> dataDocument = new ArrayList<>();
@@ -107,19 +114,25 @@ public class CirculationDocumentController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addCirculationDocument(@RequestBody AddCirculationDocumentDTO req) {
+    public ResponseEntity<?> addCirculationDocument(@RequestBody AddCirculationDocumentDTO req, HttpServletRequest request) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
+        
         circulationDocumentService.addCirculationDocument(req);
         return ResponseEntity.ok("Success Add Circulation Document");
     }
 
     @PostMapping("/update")
-    public ResponseEntity<?> UpdateCirculationDocument(@RequestBody UpdateCirculationDocumentDTO req) {
+    public ResponseEntity<?> UpdateCirculationDocument(@RequestBody UpdateCirculationDocumentDTO req, HttpServletRequest request) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
+        
         circulationDocumentService.updateCirculationDocument(req);
         return ResponseEntity.ok("Success Update Circulation Document");
     }
 
     @GetMapping("/")
-    public String showCirculationDocument(Model model) {
+    public String showCirculationDocument(Model model, HttpServletRequest request) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return "redirect:/";
+
         List<CirculationDocument> data = circulationDocumentRepository.findAll();
 
         model.addAttribute("circulation_document", data);
@@ -127,14 +140,18 @@ public class CirculationDocumentController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<?> deleteCirclDocument(@RequestBody DeleteCirculationDocumentDTO req) {
+    public ResponseEntity<?> deleteCirclDocument(@RequestBody DeleteCirculationDocumentDTO req, HttpServletRequest request) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
+        
         circulationDocumentService.delete(req);
         return ResponseEntity.ok("Delete Success");
     }
     
     
     @GetMapping("/add")
-    public String addDocument(Model model) {
+    public String addDocument(Model model, HttpServletRequest request) {
+        if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return "redirect:/";
+
         String circId = circulationDocumentRepository.findLastIn();
 
         if (circId == null){
