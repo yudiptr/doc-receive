@@ -63,7 +63,6 @@ public class DocumentService {
             return  ResponseEntity.ok("Sukses");
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("FAILED");
             return  ResponseEntity.ok("Gagal");
         }
 	}
@@ -99,7 +98,6 @@ public class DocumentService {
             return  ResponseEntity.ok("Sukses");
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("FAILED");
             return  ResponseEntity.ok("Gagal");
         }
 	}

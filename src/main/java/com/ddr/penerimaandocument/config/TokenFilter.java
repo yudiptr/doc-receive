@@ -30,8 +30,6 @@ public class TokenFilter implements Filter {
       HttpSession session = httpRequest.getSession();
       String token = (String) session.getAttribute("token");
 
-      System.out.println("token");
-      System.out.println(token);
       String uri = httpRequest.getRequestURI();
 
       if (uri.equals("/login") || uri.startsWith("/login/")) {

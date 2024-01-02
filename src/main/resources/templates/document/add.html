@@ -32,20 +32,6 @@
             var docSplit = window.location.pathname.split("/");
             var docType = docSplit[1].split("-")[1];
 
-            // const dataToSend = {
-            //     documentId: $("#Did").val(),
-            //     invoiceRef: $("#des").val(),
-            //     description: $("#ref").val(),
-            //     companyTo: selectedCompany,
-            //     vendor: selectedVendor,
-            //     contactName: $("#Coname").val(),
-            //     contactNumber: $("#Conum").val(),
-            //     file: files,
-            //     createdBy: "",
-            //     status: "DRAFT",
-            //     documentType: docType,
-            // };
-
             var formData = new FormData();
             formData.append('addDocumentData[]', $("#Did").val());
             formData.append('addDocumentData[]', $("#des").val());
