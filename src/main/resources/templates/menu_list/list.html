@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout">
+    <head>
+        <!-- Head content - Meta tags, title, CSS references -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            
+            function deleteSelected() {
+                const temp = []
+                var checkboxes = document.querySelectorAll('input[id^=deleteCheckbox]');
+                checkboxes.forEach(function(checkbox) {
+                    if (checkbox.checked == true) {
+                        temp.push(checkbox.value)
+                    }
+                });
+                
+                const dataToSend = {
+                    uamJoinId: temp
+                }
+                $.ajax({
+                    url: 'delete',
+                    type: 'POST',
+                    data: JSON.stringify(dataToSend),
+                    contentType: 'application/json',
+                    success: (res) => {
+                        var checkboxes = document.querySelectorAll('input[id^=deleteCheckbox]');
+                        checkboxes.forEach(function(checkbox) {
+                            checkbox.checked = false;
+                        });
+                        location.reload()
+                    },
+                    error: (err) => {
+                        console.log(err)
+                    }
+                })
+            }
+
+            function addMenuList(){
+                var selectRole = document.getElementById("selectedRole");
+                var selectedRole = selectRole.value;
+
+                var selectMenu = document.getElementById("selectedMenu");
+                var selectedMenu = selectMenu.value;
+
+                const dataToSend = {
+                    role: selectedRole,
+                    menu: selectedMenu
+                }
+
+                $.ajax({
+                type: "post",
+                url: "add",
+                data: JSON.stringify(dataToSend),
+                contentType: 'application/json',
+                success: function () {
+                    window.location.href = "/menu-list/";
+                },
+                error: (err) => {
+                    console.log(err)
+                }
+            });
+            }
+        </script>
+    </head>
+    <section layout:fragment="header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">Master Vendor</h1>
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <button class="btn btn-danger m-2" type="button" onclick="deleteSelected()">Delete Selected</button>
+                        <button class="btn btn-primary m-2" data-toggle="modal" data-target="#exampleModal">
+                            Add Menu Role
+                        </button>
+                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Add Menu Role</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form>
+                                            <div class="form-group">
+                                                <label>Select Role</label> 
+                                                <select id="selectedRole" class="w-25 m-2" required>
+                                                    <option th:each="data : ${role}" th:value="${data.id}" th:text="${data.roleName}"></option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Select Menu</label> 
+                                                <select id="selectedMenu" class="w-50 m-2" required>
+                                                    <option th:each="data : ${uam}" th:value="${data.id}" th:text="${data.uamName}"></option>
+                                                </select>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary" onclick="addMenuList()">Tambah Role</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- Button trigger modal -->
+          
+        <!-- /.container-fluid -->
+    </section>
+    <section layout:fragment="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 w-fit d-flex justify-content-center">
+                    <div class="card px-4 py-4 w-50">
+                        <table class="table dataTable table-hover ">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Select</th>
+                                    <th>Role</th>
+                                    <th>Menu</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Loop melalui list of companies -->
+                                <tr th:each="data, index : ${menu_role}">
+                                    <td>
+                                        <input type="checkbox" th:id="'deleteCheckbox' + ${index.index}" th:name="'deleteCheckbox' + ${index.index}" th:value="${data.id}">
+                                    </td>    
+                                    <td th:text="${data.role.roleName}"></td>
+                                    <td th:text="${data.uam.uamName}"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <!-- /.card -->
+                    </div>
+                </div>
+                <!-- /.col -->
+            </div>
+        </div>
+    </section>
+    <th:block layout:fragment="script">
+    </th:block>
+    </body>
+</html>
