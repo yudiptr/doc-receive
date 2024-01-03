@@ -1,5 +1,7 @@
 package com.ddr.penerimaandocument.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +11,7 @@ import com.ddr.penerimaandocument.dto.GetUserResDTO;
 import com.ddr.penerimaandocument.dto.LoginRequestDTO;
 import com.ddr.penerimaandocument.model.User;
 import com.ddr.penerimaandocument.repository.RoleRepository;
+import com.ddr.penerimaandocument.repository.UAM_JoinRepository;
 import com.ddr.penerimaandocument.repository.UserRepository;
 
 import lombok.NoArgsConstructor;
@@ -25,6 +28,9 @@ public class AuthService {
 
     @Autowired
     private RoleRepository roleRepository;
+    
+    @Autowired
+    private UAM_JoinRepository uam_JoinRepository;
 
 
     public String doLogin(LoginRequestDTO req){
@@ -41,6 +47,10 @@ public class AuthService {
         data.setRole(roleRepository.getReferenceById(req.getRole()));
 
         userRepository.save(data);
+    }
+
+    public List<String> getAllRole(Integer roleId){
+        return uam_JoinRepository.findMenuByRole(roleId);
     }
 
     public void deleteUser(DeleteUserDTO req){
