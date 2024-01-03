@@ -5,13 +5,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -20,11 +27,10 @@ import com.ddr.penerimaandocument.repository.DocumentRepository;
 import com.ddr.penerimaandocument.repository.VendorRepository;
 import com.ddr.penerimaandocument.service.DocumentService;
 import com.ddr.penerimaandocument.service.UtilService;
-
 import jakarta.servlet.http.HttpServletRequest;
-
 import com.ddr.penerimaandocument.dto.AddDocumentReqDTO;
 import com.ddr.penerimaandocument.dto.DeleteDocumentDTO;
+import com.ddr.penerimaandocument.dto.DownloadDocumentDTO;
 import com.ddr.penerimaandocument.dto.EditDocumentReqDTO;
 import com.ddr.penerimaandocument.model.Document;
 import com.ddr.penerimaandocument.model.DocumentType;
@@ -49,6 +55,30 @@ public class DocumentOutController {
 
     @Autowired
     private UtilService utilService;
+
+    @PostMapping("/download")
+    public ResponseEntity<Resource> downloadDocument(@RequestBody DownloadDocumentDTO req ) throws IOException {
+        String UPLOAD_DIR = "C:\\Users\\YudiSabri\\Desktop\\docReceive\\" + req.getFilePath();
+        System.out.println("MASUK");
+        System.out.println(UPLOAD_DIR);
+        Path file = Paths.get(UPLOAD_DIR);
+        Resource resource;
+        try {
+            resource = new org.springframework.core.io.ByteArrayResource(Files.readAllBytes(file));
+        } catch (IOException e) {
+            // Handle file not found or other exceptions
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        // Set the content type and disposition headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", req.getFilePath()); // Replace with your desired filename
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(resource);
+    }
 
     @GetMapping(path = "/")
     public String showDocumentOut(Model model, HttpServletRequest request){

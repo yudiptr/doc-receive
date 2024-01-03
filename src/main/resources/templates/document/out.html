@@ -9,23 +9,36 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
 
-            $(document).ready(function(){
-                $('#multiSelect').change(function(){
-                    $('#multiSelect option:selected').each(function(){
-                        var selectedValue = $(this).val();
-                        var selectedText = $(this).text();
-                        
-                        // Append selected options to the container
-                        $('#selectedOptionsContainer').append('<div class="badge badge-info mr-2">' + selectedText + '</div>');
-                    });
-                });
+            function downloadDocument(filePath){
 
-                $('#selectedOptionsContainer').on('click', '.badge', function(e){
-                    var deselectedValue = $(this).attr('data-value');
-                    $('#multiSelect option[value="' + deselectedValue + '"]').prop('selected', false);
-                    $(this).remove();
-                });
-            });
+                const dataToSend = {
+                    filePath: filePath
+                };
+
+                $.ajax({
+                    url: 'download',
+                    type: 'POST',
+                    data: JSON.stringify(dataToSend),
+                    xhrFields: {
+                        responseType: 'blob'
+                    },
+                    contentType: 'application/json',
+                    success: (data) => {
+                        const url = window.URL.createObjectURL(data);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = filePath; // Set the desired file name
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                    },
+                    
+                    error: (err) => {
+                
+                    }
+                })
+            }
 
             function editDocument(){
                 const temp = []
@@ -111,6 +124,7 @@
                                     <th>Invoice Ref</th>
                                     <th>Created By</th>
                                     <th>Status</th>
+                                    <th>Download</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -126,6 +140,7 @@
                                     <td th:text="${doc.invoiceRef}"></td>
                                     <td th:text="${doc.createdBy}"></td>
                                     <td th:text="${doc.status}"></td>
+                                    <td><button th:data-name="${doc.documentPath}" th:onclick="downloadDocument(this.getAttribute('data-name'))" type="button">Docs</button></td>
                                 </tr>
                             </tbody>
                         </table>
