@@ -1,5 +1,6 @@
 package com.ddr.penerimaandocument.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
@@ -37,7 +38,6 @@ public class Document {
     private Vendor vendor;
 
     private String description;
-    private String receivedBy;
     private String contactName;
     private String contactNumber;
     private String documentPath;
@@ -50,5 +50,6 @@ public class Document {
     private Status status;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private DocumentType type;
 }

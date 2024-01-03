@@ -26,7 +26,7 @@ public class CirculationDocumentService {
 	public CirculationDocumentService() {
 	}
 
-	public void addCirculationDocument(AddCirculationDocumentDTO req){
+	public void addCirculationDocument(AddCirculationDocumentDTO req, String type){
 		CirculationDocument data = new CirculationDocument();
 		data.setCirculationDocId(req.getCirculationDocumentId());
 		data.setClosed(false);
@@ -35,6 +35,7 @@ public class CirculationDocumentService {
 		data.setReceivedBy(req.getReceivedBy());
 		data.setRefDescription(req.getRefDescription());
 		data.setCreatedBy(""); // to be changed, by on logged in user
+		data.setType(type);
 
 		for (String i : req.getDocumentsId()){
 			Document doc = documentRepository.getReferenceById(i);
@@ -70,6 +71,15 @@ public class CirculationDocumentService {
 	public void delete(DeleteCirculationDocumentDTO req){
 
 		for (String i : req.getCirculationsValue()){
+			CirculationDocument data = circulationDocumentRepository.getReferenceById(i);
+			String[] dataDoc = data.getDocumentsId();
+
+			for (String j : dataDoc){
+				Document temp = documentRepository.getReferenceById(j);
+				temp.setStatus(Status.DRAFT);
+				documentRepository.save(temp);
+			}
+			
 			circulationDocumentRepository.deleteById(i);
 		}
 	}

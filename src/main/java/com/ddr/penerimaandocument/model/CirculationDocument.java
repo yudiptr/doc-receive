@@ -35,5 +35,6 @@ public class CirculationDocument {
 
     private boolean isClosed;
     private String createdBy;
+    private String type;
 
 }

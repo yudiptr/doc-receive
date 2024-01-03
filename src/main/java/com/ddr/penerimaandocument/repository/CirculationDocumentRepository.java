@@ -19,7 +19,8 @@ public interface CirculationDocumentRepository extends JpaRepository<Circulation
     @Query("SELECT C FROM CirculationDocument C WHERE C.isClosed = false")
     List<CirculationDocument> findByIsClosed();
 
-    @Query("Select d FROM CirculationDocument d WHERE d.isClosed = false AND d.company.companyId = :comId")
-    List<CirculationDocument> findByCompanySubmitted(@Param("comId") String companyId);
+    @Query("Select d FROM CirculationDocument d WHERE d.isClosed = false AND d.company.companyId = :comId AND d.type = :tipe")
+    List<CirculationDocument> findByCompanySubmitted(@Param("comId") String companyId, @Param("tipe") String type);
 
+    List<CirculationDocument> findByType(String type);
 }

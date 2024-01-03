@@ -65,7 +65,7 @@ public class ReceivedDocumentController {
         if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
         
         GetAllCirculationDocumentByCompanyResponseDTO res = new GetAllCirculationDocumentByCompanyResponseDTO();
-        List<CirculationDocument> data = circulationDocumentRepository.findByCompanySubmitted(Cid);
+        List<CirculationDocument> data = circulationDocumentRepository.findByCompanySubmitted(Cid, "IN");
         res.setDocuments(data.stream().toArray(CirculationDocument[]::new));
         return ResponseEntity.ok(res);
     }
@@ -77,7 +77,7 @@ public class ReceivedDocumentController {
         ReceivedDocument data = receivedDocumentRepository.getReferenceById(receiveId);
 
         List<CirculationDocument> dataDocument = new ArrayList<>();
-        List<CirculationDocument> dataAllDocument = circulationDocumentRepository.findByCompanySubmitted(data.getCompany().getCompanyId());
+        List<CirculationDocument> dataAllDocument = circulationDocumentRepository.findByCompanySubmitted(data.getCompany().getCompanyId(),"IN");
  
         for (String i : data.getDocumentsId()){
             CirculationDocument temp = circulationDocumentRepository.getReferenceById(i);

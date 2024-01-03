@@ -14,6 +14,7 @@ import com.ddr.penerimaandocument.dto.GetAllDocumentByCompanyResponseDTO;
 import com.ddr.penerimaandocument.dto.UpdateCirculationDocumentDTO;
 import com.ddr.penerimaandocument.model.CirculationDocument;
 import com.ddr.penerimaandocument.model.Document;
+import com.ddr.penerimaandocument.model.DocumentType;
 import com.ddr.penerimaandocument.repository.CirculationDocumentRepository;
 import com.ddr.penerimaandocument.repository.CompanyRepository;
 import com.ddr.penerimaandocument.repository.DocumentRepository;
@@ -32,8 +33,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 @Controller
-@RequestMapping("/circulation-document")
-public class CirculationDocumentController {
+@RequestMapping("/circulation-document-in")
+public class CirculationDocumentInController {
 
     private final Integer CODE_MENU = 8;
 
@@ -58,7 +59,7 @@ public class CirculationDocumentController {
         if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
         
         GetAllDocumentByCompanyResponseDTO res = new GetAllDocumentByCompanyResponseDTO();
-        List<Document> data = documentRepository.findByCompanyDraft(Cid);
+        List<Document> data = documentRepository.findByCompanyDraft(Cid, DocumentType.IN);
         res.setDocuments(data.stream().toArray(Document[]::new));
         return ResponseEntity.ok(res);
     }
@@ -69,9 +70,8 @@ public class CirculationDocumentController {
         if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
         
         GetAllDocumentByCompanyResponseDTO res = new GetAllDocumentByCompanyResponseDTO();
-        List<Document> data = documentRepository.findByCompanyDraft(Cid);
-        System.out.println(data);
-        List<Document> data2 = documentRepository.findByCompanySubmitted(Cid);
+        List<Document> data = documentRepository.findByCompanyDraft(Cid, DocumentType.IN);
+        List<Document> data2 = documentRepository.findByCompanySubmitted(Cid, DocumentType.IN);
         CirculationDocument data3 = circulationDocumentRepository.getReferenceById(cirId);
 
         String[] documentIds = data3.getDocumentsId();
@@ -99,7 +99,7 @@ public class CirculationDocumentController {
         CirculationDocument data = circulationDocumentRepository.getReferenceById(circlId);
 
         List<Document> dataDocument = new ArrayList<>();
-        List<Document> dataAllDocument = documentRepository.findByCompanyDraft(data.getCompany().getCompanyId());
+        List<Document> dataAllDocument = documentRepository.findByCompanyDraft(data.getCompany().getCompanyId(), DocumentType.IN);
  
         for (String i : data.getDocumentsId()){
             Document temp = documentRepository.getReferenceById(i);
@@ -110,14 +110,14 @@ public class CirculationDocumentController {
         model.addAttribute("companies", companyRepository.getAllCompanyName());
         model.addAttribute("docs", dataDocument);
         model.addAttribute("allDocs", dataAllDocument);
-        return "circulation_document/edit";
+        return "circulation_document_in/edit";
     }
 
     @PostMapping("/add")
     public ResponseEntity<?> addCirculationDocument(@RequestBody AddCirculationDocumentDTO req, HttpServletRequest request) {
         if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
         
-        circulationDocumentService.addCirculationDocument(req);
+        circulationDocumentService.addCirculationDocument(req, "IN");
         return ResponseEntity.ok("Success Add Circulation Document");
     }
 
@@ -133,10 +133,10 @@ public class CirculationDocumentController {
     public String showCirculationDocument(Model model, HttpServletRequest request) {
         if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return "redirect:/";
 
-        List<CirculationDocument> data = circulationDocumentRepository.findAll();
+        List<CirculationDocument> data = circulationDocumentRepository.findByType("IN");
 
         model.addAttribute("circulation_document", data);
-        return "circulation_document/list";
+        return "circulation_document_in/list";
     }
 
     @PostMapping("/delete")
@@ -181,7 +181,7 @@ public class CirculationDocumentController {
             model.addAttribute("counter", newCircId);
         }
         model.addAttribute("companies", companyRepository.getAllCompanyName());
-        return "circulation_document/add";
+        return "circulation_document_in/add";
     }
     
 }
