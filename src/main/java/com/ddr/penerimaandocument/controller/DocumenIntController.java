@@ -20,6 +20,7 @@ import com.ddr.penerimaandocument.repository.CompanyRepository;
 import com.ddr.penerimaandocument.repository.DocumentRepository;
 import com.ddr.penerimaandocument.repository.VendorRepository;
 import com.ddr.penerimaandocument.service.DocumentService;
+import com.ddr.penerimaandocument.service.JwtService;
 import com.ddr.penerimaandocument.service.UtilService;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -29,6 +30,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import java.util.List;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.util.Date;
@@ -55,6 +58,9 @@ public class DocumenIntController {
     
     @Autowired
     private UtilService utilService;
+
+    @Autowired
+    private JwtService jwtService;
 
     @PostMapping("/download")
     public ResponseEntity<Resource> downloadDocument(@RequestBody DownloadDocumentDTO req ) throws IOException {
@@ -133,6 +139,10 @@ public class DocumenIntController {
 
         if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
         
+
+        HttpSession session = request.getSession();
+        String username = jwtService.extractUsername((String) session.getAttribute("token"));
+
         AddDocumentReqDTO req = new AddDocumentReqDTO();
         req.setDocumentId(data[0]);
         req.setDescription(data[1]);
@@ -147,7 +157,7 @@ public class DocumenIntController {
         req.setDocumentType(data[9]);
         req.setFile(file);
         
-        ResponseEntity<?> res = documentService.addDocument(req);
+        ResponseEntity<?> res = documentService.addDocument(req, username);
 
         return res;
     }

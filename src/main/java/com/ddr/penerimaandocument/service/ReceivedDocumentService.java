@@ -30,7 +30,7 @@ public class ReceivedDocumentService {
 	public ReceivedDocumentService() {
 	}
 
-	public void addReceivedDocument(AddReceivedDocumentDTO req){
+	public void addReceivedDocument(AddReceivedDocumentDTO req, String user){
 		ReceivedDocument data = new ReceivedDocument();
 		data.setReceivedDocumentId(req.getReceivedDocumentId());
 		data.setClosed(false);
@@ -38,7 +38,7 @@ public class ReceivedDocumentService {
 		data.setDocumentsId(req.getDocumentsId());
 		data.setReceivedBy(req.getReceivedBy());
 		data.setRefDescription(req.getRefDescription());
-		data.setCreatedBy(""); // to be changed, by on logged in user
+		data.setCreatedBy(user); // to be changed, by on logged in user
 
 		for (String i : req.getDocumentsId()){
 			CirculationDocument doc = circulationDocumentRepository.getReferenceById(i);

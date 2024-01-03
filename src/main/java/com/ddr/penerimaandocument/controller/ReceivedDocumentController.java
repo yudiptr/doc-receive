@@ -16,13 +16,13 @@ import com.ddr.penerimaandocument.model.CirculationDocument;
 import com.ddr.penerimaandocument.model.ReceivedDocument;
 import com.ddr.penerimaandocument.repository.CirculationDocumentRepository;
 import com.ddr.penerimaandocument.repository.CompanyRepository;
-import com.ddr.penerimaandocument.repository.DocumentRepository;
-import com.ddr.penerimaandocument.repository.VendorRepository;
 import com.ddr.penerimaandocument.repository.ReceivedDocumentRepository;
+import com.ddr.penerimaandocument.service.JwtService;
 import com.ddr.penerimaandocument.service.ReceivedDocumentService;
 import com.ddr.penerimaandocument.service.UtilService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -36,28 +36,25 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/received-document")
 public class ReceivedDocumentController {
     
-   private final Integer CODE_MENU = 9;
+    private final Integer CODE_MENU = 9;
 
     @Autowired
-    DocumentRepository documentRepository;
+    private CompanyRepository companyRepository;
 
     @Autowired
-    CompanyRepository companyRepository;
+    private ReceivedDocumentRepository receivedDocumentRepository;
 
     @Autowired
-    VendorRepository vendorRepository;  
-
-    @Autowired
-    ReceivedDocumentRepository receivedDocumentRepository;
-
-    @Autowired
-    ReceivedDocumentService receivedDocumentService;
+    private ReceivedDocumentService receivedDocumentService;
     
     @Autowired
-    CirculationDocumentRepository circulationDocumentRepository;
+    private CirculationDocumentRepository circulationDocumentRepository;
 
     @Autowired
     private UtilService utilService;
+
+    @Autowired
+    private JwtService jwtService;
 
 
     @GetMapping("/docs/{companyId}")
@@ -95,7 +92,10 @@ public class ReceivedDocumentController {
     public ResponseEntity<?> addReceivedDocument(HttpServletRequest request, @RequestBody AddReceivedDocumentDTO req) {
         if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
         
-        receivedDocumentService.addReceivedDocument(req);
+        HttpSession session = request.getSession();
+        String username = jwtService.extractUsername((String) session.getAttribute("token"));
+
+        receivedDocumentService.addReceivedDocument(req, username);
         return ResponseEntity.ok("Success Add Received Document");
     }
 

@@ -26,7 +26,7 @@ public class CirculationDocumentService {
 	public CirculationDocumentService() {
 	}
 
-	public void addCirculationDocument(AddCirculationDocumentDTO req, String type){
+	public void addCirculationDocument(AddCirculationDocumentDTO req, String type, String user){
 		CirculationDocument data = new CirculationDocument();
 		data.setCirculationDocId(req.getCirculationDocumentId());
 		data.setClosed(false);
@@ -34,7 +34,7 @@ public class CirculationDocumentService {
 		data.setDocumentsId(req.getDocumentsId());
 		data.setReceivedBy(req.getReceivedBy());
 		data.setRefDescription(req.getRefDescription());
-		data.setCreatedBy(""); // to be changed, by on logged in user
+		data.setCreatedBy(user); // to be changed, by on logged in user
 		data.setType(type);
 
 		for (String i : req.getDocumentsId()){

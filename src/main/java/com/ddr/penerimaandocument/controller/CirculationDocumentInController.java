@@ -19,10 +19,12 @@ import com.ddr.penerimaandocument.repository.CirculationDocumentRepository;
 import com.ddr.penerimaandocument.repository.CompanyRepository;
 import com.ddr.penerimaandocument.repository.DocumentRepository;
 import com.ddr.penerimaandocument.service.CirculationDocumentService;
+import com.ddr.penerimaandocument.service.JwtService;
 import com.ddr.penerimaandocument.service.UtilService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -49,6 +51,9 @@ public class CirculationDocumentInController {
 
     @Autowired
     private UtilService utilService;
+
+    @Autowired
+    private JwtService jwtService;
 
     @Autowired
     private CirculationDocumentRepository circulationDocumentRepository;
@@ -117,7 +122,10 @@ public class CirculationDocumentInController {
     public ResponseEntity<?> addCirculationDocument(@RequestBody AddCirculationDocumentDTO req, HttpServletRequest request) {
         if(!utilService.compareExactRole((String) request.getSession().getAttribute("token"), CODE_MENU)) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
         
-        circulationDocumentService.addCirculationDocument(req, "IN");
+        HttpSession session = request.getSession();
+        String username = jwtService.extractUsername((String) session.getAttribute("token"));
+
+        circulationDocumentService.addCirculationDocument(req, "IN", username);
         return ResponseEntity.ok("Success Add Circulation Document");
     }
 

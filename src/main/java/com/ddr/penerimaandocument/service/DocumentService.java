@@ -31,7 +31,7 @@ public class DocumentService {
 	@Autowired 
 	VendorRepository vendorRepository;
 
-	public ResponseEntity<?> addDocument(AddDocumentReqDTO req){
+	public ResponseEntity<?> addDocument(AddDocumentReqDTO req, String user){
 
 		String UPLOAD_DIR = "C:\\Users\\YudiSabri\\Desktop\\docReceive\\";
 
@@ -54,7 +54,7 @@ public class DocumentService {
 			data.setContactNumber(req.getContactNumber());
 			data.setDocumentPath(req.getFile().getOriginalFilename());
 			data.setUpdatedBy(req.getUpdatedBy());
-			data.setCreatedBy(req.getCreatedBy());
+			data.setCreatedBy(user);
 			data.setStatus(Status.DRAFT);
 			data.setType(req.getDocumentType().equals("in") ? DocumentType.IN : DocumentType.OUT);
 
