@@ -13,7 +13,7 @@ public interface DocumentRepository extends JpaRepository<Document,String> {
 
     List<Document> findByType(DocumentType type);
 
-    @Query("SELECT c.documentId FROM Document c WHERE c.createdAt = (SELECT MAX(c2.createdAt) FROM Document c2) AND c.type = IN")
+    @Query("SELECT c.documentId FROM Document c WHERE c.createdAt = (SELECT MAX(c2.createdAt) FROM Document c2)")
     String findLastIn();
 
 
