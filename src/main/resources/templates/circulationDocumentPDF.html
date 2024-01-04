@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        h1{
+            color: brown;
+        }
+        .quotation {
+            width: 100%;
+        }
+        .quotation, .quotation th, .quotation td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        .quotation th {
+            background-color: black;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<h1>Dua Delapan Resource</h1>
+<table>
+    <tr>
+        <th th:text ="'Circulation Document ID : ' + ${circl.circulationDocId}"></th>
+    </tr>
+    <tr>
+        <td th:text="'Send To :  ' + ${circl.receivedBy}"></td>
+    </tr>
+    <tr>
+        <td th:text="${circl.company.companyName}"></td>
+    </tr>
+</table>
+<br />
+<table class="quotation">
+    <tr>
+        <th>No</th>
+        <th>DocumentId</th>
+        <th>Vendor Name</th>
+        <th>Invoice Ref</th>
+        <th>Ref Description</th>
+    </tr>
+    <tr th:each="item, iterStat: ${docs}">
+        <td th:text="${iterStat.index + 1}"></td>
+        <td th:text="${item.documentId}"></td>
+        <td th:text="${item.vendor.vendorName}"></td>
+        <td th:text="${item.invoiceRef}"></td>
+        <td th:text="${item.description}"></td>
+    </tr>
+</table>
+</body>
+</html>

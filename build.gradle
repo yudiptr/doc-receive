@@ -38,6 +38,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation group: 'org.xhtmlrenderer', name: 'flying-saucer-pdf', version: '9.1.22'
 
 	// implementation 'org.springframework.boot:spring-boot-starter-security'
 	// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api

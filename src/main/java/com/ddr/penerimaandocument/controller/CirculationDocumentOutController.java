@@ -22,17 +22,14 @@ import com.ddr.penerimaandocument.service.CirculationDocumentService;
 import com.ddr.penerimaandocument.service.JwtService;
 import com.ddr.penerimaandocument.service.UtilService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-
 import java.text.SimpleDateFormat;
 import java.util.List;
 import org.springframework.web.bind.annotation.PostMapping;
 import java.util.ArrayList;
 import java.util.Date;
 import org.springframework.web.bind.annotation.RequestBody;
-
 
 @Controller
 @RequestMapping("/circulation-document-out")
@@ -117,6 +114,12 @@ public class CirculationDocumentOutController {
         model.addAttribute("allDocs", dataAllDocument);
         return "circulation_document_out/edit";
     }
+
+    @GetMapping("/get/{circlDocId}")
+    public CirculationDocument getData(@PathVariable("circlDocId") String circlId) {
+        return circulationDocumentRepository.getReferenceById(circlId);
+    }
+    
 
     @PostMapping("/add")
     public ResponseEntity<?> addCirculationDocument(@RequestBody AddCirculationDocumentDTO req, HttpServletRequest request) {
