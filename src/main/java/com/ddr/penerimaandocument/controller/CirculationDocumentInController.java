@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.ddr.penerimaandocument.dto.AddCirculationDocumentDTO;
 import com.ddr.penerimaandocument.dto.DeleteCirculationDocumentDTO;
 import com.ddr.penerimaandocument.dto.GetAllDocumentByCompanyResponseDTO;
-import com.ddr.penerimaandocument.dto.GetJsonCirculationDocsDTO;
 import com.ddr.penerimaandocument.dto.UpdateCirculationDocumentDTO;
 import com.ddr.penerimaandocument.model.CirculationDocument;
 import com.ddr.penerimaandocument.model.Document;
@@ -26,6 +25,7 @@ import com.ddr.penerimaandocument.service.JwtService;
 import com.ddr.penerimaandocument.service.UtilService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -127,16 +127,12 @@ public class CirculationDocumentInController {
     }
 
     @GetMapping("/get/{circlDocId}")
-    public ResponseEntity<GetJsonCirculationDocsDTO> getData(@PathVariable("circlDocId") String circlId) {
+    public void getData(@PathVariable("circlDocId") String circlId, HttpServletResponse response) {
         CirculationDocument circulationDocument = circulationDocumentRepository.getReferenceById(circlId);
         circulationDocument = (CirculationDocument) Hibernate.unproxy(circulationDocument);
 
         if (circulationDocument != null) {
-            // Get the Document object based on some logic (replace with your own implementation)
             
-
-            GetJsonCirculationDocsDTO res = new GetJsonCirculationDocsDTO();
-
             List<Document> dataDocs = new ArrayList<Document>();
             for (String i : circulationDocument.getDocumentsId()){
                 Document docs = documentRepository.getReferenceById(i);
@@ -148,13 +144,9 @@ public class CirculationDocumentInController {
             temp.put("circl", circulationDocument);
             temp.put("docs", dataDocs);
 
-            pdfService.generatePdfFile("circulationDocumentPDF", temp, circlId + ".pdf");
-            res.setRes(temp);
+            pdfService.generatePdfFile("circulationDocumentPDF", temp, circlId + ".pdf", response);
 
-            return new ResponseEntity<>(res, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        } 
     }
 
     @PostMapping("/add")
