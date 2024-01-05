@@ -50,7 +50,7 @@ public class GeneralController {
         Integer roleId = Integer.parseInt(jwtService.extractRoleFromToken(res));
 
         List<String> menuRole = authService.getAllRole(roleId);
-        System.out.println(menuRole);
+        
         session.setAttribute("token", res);
         session.setAttribute("role", menuRole);
 

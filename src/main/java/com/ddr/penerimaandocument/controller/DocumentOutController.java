@@ -65,8 +65,6 @@ public class DocumentOutController {
     @PostMapping("/download")
     public ResponseEntity<Resource> downloadDocument(@RequestBody DownloadDocumentDTO req ) throws IOException {
         String UPLOAD_DIR = "C:\\Users\\YudiSabri\\Desktop\\docReceive\\" + req.getFilePath();
-        System.out.println("MASUK");
-        System.out.println(UPLOAD_DIR);
         Path file = Paths.get(UPLOAD_DIR);
         Resource resource;
         try {

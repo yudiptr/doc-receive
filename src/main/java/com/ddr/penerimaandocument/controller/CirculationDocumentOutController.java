@@ -141,7 +141,8 @@ public class CirculationDocumentOutController {
             Map<String, Object> temp = new HashMap<>();
             temp.put("circl", circulationDocument);
             temp.put("docs", dataDocs);
-
+            temp.put("logo", "https://drive.google.com/uc?export=view&id=1H7aB19YqrZuDvs4hMtgR2FP1DYaX1EX-");
+            
             pdfService.generatePdfFile("circulationDocumentPDF", temp, circlId + ".pdf", response);
 
             return new ResponseEntity<>(HttpStatus.OK);
