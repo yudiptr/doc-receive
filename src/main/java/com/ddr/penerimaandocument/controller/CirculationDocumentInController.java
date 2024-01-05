@@ -27,10 +27,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.web.bind.annotation.PostMapping;
 import java.util.ArrayList;
 import java.util.Date;
@@ -127,7 +127,7 @@ public class CirculationDocumentInController {
     }
 
     @GetMapping("/get/{circlDocId}")
-    public void getData(@PathVariable("circlDocId") String circlId, HttpServletResponse response) {
+    public void getData(@PathVariable("circlDocId") String circlId, HttpServletResponse response) throws IOException {
         CirculationDocument circulationDocument = circulationDocumentRepository.getReferenceById(circlId);
         circulationDocument = (CirculationDocument) Hibernate.unproxy(circulationDocument);
 
@@ -143,6 +143,7 @@ public class CirculationDocumentInController {
             Map<String, Object> temp = new HashMap<>();
             temp.put("circl", circulationDocument);
             temp.put("docs", dataDocs);
+            temp.put("logo", "https://drive.google.com/uc?export=view&id=1H7aB19YqrZuDvs4hMtgR2FP1DYaX1EX-");
 
             pdfService.generatePdfFile("circulationDocumentPDF", temp, circlId + ".pdf", response);
 

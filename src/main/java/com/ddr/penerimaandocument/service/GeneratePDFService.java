@@ -31,6 +31,7 @@ public class GeneratePDFService  {
             renderer.createPDF(byteArrayOutputStream, false);
             renderer.finishPDF();
 
+            
             response.setContentType("application/pdf");
             response.setHeader("Content-Disposition", "attachment; filename=" + pdfFileName);
             response.setContentLength(byteArrayOutputStream.size());

@@ -1,5 +1,9 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html
+    xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:th="http://www.thymeleaf.org" 
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
 <head>
     <style>
         h1{
@@ -19,7 +23,7 @@
     </style>
 </head>
 <body>
-<h1>Dua Delapan Resource</h1>
+<img th:src="${logo}" style="height: 30%; width: 20%;" alt="test"/>
 <table>
     <tr>
         <th th:text ="'Circulation Document ID : ' + ${circl.circulationDocId}"></th>
