@@ -122,7 +122,7 @@
                                     <td th:text="${docs.createdBy}"></td>
                                     <td th:text="${docs.refDescription}"></td>
                                     <td th:text="${docs.isClosed} ? 'Received' : 'Submitted' "></td>
-                                    <td><button th:data-name="${docs.circulationDocId}" th:onclick="downloadDocument(this.getAttribute('data-name'))" type="button">Generate PDF</button></td>
+                                    <td><button th:data-name="${docs.circulationDocId}" th:onclick="downloadDocument(this.getAttribute('data-name'))" type="button">Download</button></td>
                                 </tr>
                             </tbody>
                         </table>
